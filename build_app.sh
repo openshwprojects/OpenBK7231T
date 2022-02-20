@@ -2,8 +2,9 @@
 
 APP_PATH=$1
 APP_NAME=$2
-APP_VERSION=$3
-USER_CMD=$4
+//APP_VERSION=$3
+APP_VERSION="`(cd apps/OpenBK* && git describe --abbrev=8 --always)`"
+USER_CMD=$3
 echo APP_PATH=$APP_PATH
 echo APP_NAME=$APP_NAME
 echo APP_VERSION=$APP_VERSION
