@@ -691,6 +691,12 @@ LFLAGS += -Wl,-wrap,malloc -Wl,-wrap,_malloc_r -Wl,-wrap,free -Wl,-wrap,_free_r 
 # LFLAGS += -Wl,-wrap,pvPortMalloc -Wl,-wrap,vPortFree
 # LFLAGS += -Wl,-wrap,pvPortRealloc
 
+CFLAGS += -DWRAP_PRINTF=1
+LFLAGS += -Wl,-wrap,vsnprintf
+LFLAGS += -Wl,-wrap,snprintf
+LFLAGS += -Wl,-wrap,sprintf
+LFLAGS += -Wl,-wrap,vsprintf
+
 
 # ??
 #LFLAGS += --specs=nano.specs
