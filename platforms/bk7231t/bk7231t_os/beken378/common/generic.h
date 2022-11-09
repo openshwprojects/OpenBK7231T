@@ -4,6 +4,7 @@
 #include "include.h"
 
 typedef void (*FUNCPTR)(void);
+typedef void (*FUNCTICKPTR)(uint32_t ticks);
 typedef void (*FUNC_1PARAM_PTR)(void *ctxt);
 typedef void (*FUNC_2PARAM_PTR)(void *arg, uint8_t vif_idx);
 

@@ -74,7 +74,7 @@
 
 /* Tick */
 #define configCPU_CLOCK_HZ			                ( ( unsigned long ) 120000000 )
-#define configTICK_RATE_HZ			                ( ( TickType_t ) 500 )
+#define configTICK_RATE_HZ			                ( ( TickType_t ) 1000 )
 #define configUSE_16_BIT_TICKS		                0
 #define configUSE_WATCHDOG_TICK                     32000
 
