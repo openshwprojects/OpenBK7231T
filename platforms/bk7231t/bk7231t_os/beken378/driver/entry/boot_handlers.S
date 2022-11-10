@@ -599,7 +599,6 @@ WFI:
 	MCR p15, 0, R0, c7, c0, 4
     MCR p15, 0, R0, c15, c8, 2
     MCR p15, 0, R0, c7, c10, 4
-
 	BX LR
 /*EOF*/
 

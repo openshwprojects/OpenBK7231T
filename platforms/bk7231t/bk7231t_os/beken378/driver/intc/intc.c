@@ -39,6 +39,18 @@ ISR_T _isrs[INTC_MAX_COUNT] = {{{0, 0}},};
 static UINT32 isrs_mask = 0;
 static ISR_LIST_T isr_hdr = {{&isr_hdr.isr, &isr_hdr.isr},};
 IRDA_CHECK_FUNC func_irda_check = NULL;
+volatile UINT32 irq_ticks = 0;
+volatile UINT32 fiq_ticks = 0;
+
+UINT32 intc_get_irq_tick_count()
+{
+    return irq_ticks;
+}
+
+UINT32 intc_get_fiq_tick_count()
+{
+    return fiq_ticks;
+}
 
 void intc_register_irda_check_func(IRDA_CHECK_FUNC func)
 {
@@ -231,6 +243,8 @@ void rf_ps_wakeup_isr_idle_int_cb()
 void intc_irq(void)
 {
     UINT32 irq_status;
+
+    irq_ticks++;
     
     irq_status = sddev_control(ICU_DEV_NAME, CMD_GET_INTR_STATUS, 0);
     irq_status = irq_status & 0xFFFF;
@@ -250,6 +264,7 @@ void intc_fiq(void)
 {
     UINT32 fiq_status;
 
+    fiq_ticks++;
     /* bk_ir_check_timer*/
     if (func_irda_check && ((*func_irda_check)() == 0))
     {
