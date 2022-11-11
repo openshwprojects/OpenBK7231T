@@ -52,6 +52,69 @@ UINT32 intc_get_fiq_tick_count()
     return fiq_ticks;
 }
 
+int intc_get_handler_count()
+{
+    int cnt = 0;
+    LIST_HEADER_T *pos, *n;
+    if (list_empty(&isr_hdr.isr))
+    {
+        return 0;
+    }
+
+    list_for_each_safe(pos, n, &isr_hdr.isr)
+    {
+        cnt++;
+    }
+    return cnt;
+}
+
+UINT32 intc_get_isr_call_count(int isr_index)
+{
+    UINT32 isr_cnt = 0;
+    int cnt = 0;
+    LIST_HEADER_T *pos, *n;
+    ISR_T *f;
+
+    if (list_empty(&isr_hdr.isr))
+    {
+        return 0;
+    }
+
+    list_for_each_safe(pos, n, &isr_hdr.isr)
+    {
+        if (cnt == isr_index)
+        {
+            f = list_entry(pos, ISR_T, list);
+            isr_cnt = f->isr_cnt;
+        }
+        cnt++;
+    }
+    return isr_cnt;
+}
+
+int intc_get_isr_num(int isr_index)
+{
+    int cnt = 0;
+    LIST_HEADER_T *pos, *n;
+    ISR_T *f;
+
+    if (list_empty(&isr_hdr.isr))
+    {
+        return -1;
+    }
+
+    list_for_each_safe(pos, n, &isr_hdr.isr)
+    {
+        if (cnt == isr_index)
+        {
+            f = list_entry(pos, ISR_T, list);
+            return f->int_num;
+        }
+        cnt++;
+    }
+    return -1;
+}
+
 void intc_register_irda_check_func(IRDA_CHECK_FUNC func)
 {
     func_irda_check = func;
@@ -85,6 +148,7 @@ void intc_hdl_entry(UINT32 int_status)
         if ((BIT(i) & status))
         {
             f->isr_func();
+            f->isr_cnt++;
             status &= ~(BIT(i));
         }
 
@@ -108,6 +172,7 @@ void intc_service_register(UINT8 int_num, UINT8 int_pri, FUNCPTR isr)
     cur_ptr->isr_func = isr;
     cur_ptr->int_num  = int_num;
     cur_ptr->pri      = int_pri;
+    cur_ptr->isr_cnt  = 0;
 
     INTC_PRT("reg_isr:%d:%d:%p\r\n", int_num, int_pri, isr);
 

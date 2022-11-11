@@ -61,6 +61,7 @@ typedef struct
     UINT8  pri;            // priority
     UINT8  int_num;
     UINT16 resv;
+    UINT32 isr_cnt;
 } ISR_T;
 
 typedef struct
