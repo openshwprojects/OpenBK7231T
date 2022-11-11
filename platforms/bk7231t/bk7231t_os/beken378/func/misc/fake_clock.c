@@ -265,10 +265,12 @@ void cal_timer_set(void)
     param.t_Int_Handler= cal_timer_hdl;
 
     ret = sddev_control(TIMER_DEV_NAME, CMD_TIMER_INIT_PARAM, &param);
-    ASSERT(BK_TIMER_SUCCESS == ret);
+    //ASSERT(BK_TIMER_SUCCESS == ret);
+    if (ret != BK_TIMER_SUCCESS)
+        return;
     timer_channel = param.channel;
     ret = sddev_control(TIMER_DEV_NAME, CMD_TIMER_UNIT_ENABLE, &timer_channel);
-    ASSERT(BK_TIMER_SUCCESS == ret);
+    //ASSERT(BK_TIMER_SUCCESS == ret);    
 }
 
 void cal_timer_deset(void)
@@ -278,7 +280,9 @@ void cal_timer_deset(void)
 
     timer_channel = CAL_TIMER_ID;
     ret = sddev_control(TIMER_DEV_NAME, CMD_TIMER_UNIT_DISABLE, &timer_channel);
-    ASSERT(BK_TIMER_SUCCESS == ret);
+    //ASSERT(BK_TIMER_SUCCESS == ret);
+    if (ret != BK_TIMER_SUCCESS)
+        return;
     timer_cal_init();
 }
 
@@ -360,7 +364,7 @@ void fclk_init(void)
     param.end_value       = fclk_cal_endvalue((UINT32)param.cfg.bits.clk);
 
     ret = sddev_control(PWM_DEV_NAME, CMD_PWM_INIT_PARAM, &param);
-    ASSERT(PWM_SUCCESS == ret);
+    //ASSERT(PWM_SUCCESS == ret);
     #else
     timer_param_t param;
     param.channel = FCLK_TIMER_ID;
@@ -369,12 +373,15 @@ void fclk_init(void)
     param.t_Int_Handler= fclk_hdl;
 
     ret = sddev_control(TIMER_DEV_NAME, CMD_TIMER_INIT_PARAM, &param);
-    ASSERT(BK_TIMER_SUCCESS == ret);
+    //ASSERT(BK_TIMER_SUCCESS == ret);
+    if (ret != BK_TIMER_SUCCESS)
+        return;
     UINT32 timer_channel;
     timer_channel = param.channel;
     ret = sddev_control(TIMER_DEV_NAME, CMD_TIMER_UNIT_ENABLE, &timer_channel);
-    ASSERT(BK_TIMER_SUCCESS == ret);
-
+    //ASSERT(BK_TIMER_SUCCESS == ret);
+    if (ret != BK_TIMER_SUCCESS)
+        return;
     bk_cal_init(0);
     #endif
 

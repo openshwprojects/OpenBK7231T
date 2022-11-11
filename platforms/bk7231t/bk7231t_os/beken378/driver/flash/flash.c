@@ -655,24 +655,32 @@ UINT32 flash_ctrl(UINT32 cmd, void *parm)
 
     case CMD_FLASH_SET_DPLL:
         ret = sddev_control(SCTRL_DEV_NAME, CMD_SCTRL_SET_FLASH_DPLL, 0);
-        ASSERT(DRV_FAILURE != ret);
-
-        reg = REG_READ(REG_FLASH_CONF);
-        reg &= ~(FLASH_CLK_CONF_MASK << FLASH_CLK_CONF_POSI);
-        reg = reg | (5 << FLASH_CLK_CONF_POSI); /*dco--9*/
-        REG_WRITE(REG_FLASH_CONF, reg);
+        //ASSERT(DRV_FAILURE != ret);
+        if (ret == DRV_SUCCESS)
+        {
+            reg = REG_READ(REG_FLASH_CONF);
+            reg &= ~(FLASH_CLK_CONF_MASK << FLASH_CLK_CONF_POSI);
+            reg = reg | (5 << FLASH_CLK_CONF_POSI); /*dco--9*/
+            REG_WRITE(REG_FLASH_CONF, reg);
+        } else {
+            ret = FLASH_FAILURE;
+        }
         break;
 
     case CMD_FLASH_SET_DCO:
         ret = sddev_control(SCTRL_DEV_NAME, CMD_SCTRL_SET_FLASH_DCO, 0);
-        ASSERT(DRV_FAILURE != ret);
-        
-        reg = REG_READ(REG_FLASH_CONF);
-        reg &= ~(FLASH_CLK_CONF_MASK << FLASH_CLK_CONF_POSI);
-        reg = reg | (9 << FLASH_CLK_CONF_POSI);
-        REG_WRITE(REG_FLASH_CONF, reg);
+        //ASSERT(DRV_FAILURE != ret);
+        if (ret == DRV_SUCCESS)
+        {
+            reg = REG_READ(REG_FLASH_CONF);
+            reg &= ~(FLASH_CLK_CONF_MASK << FLASH_CLK_CONF_POSI);
+            reg = reg | (9 << FLASH_CLK_CONF_POSI);
+            REG_WRITE(REG_FLASH_CONF, reg);
 
-        REG_WRITE(REG_FLASH_DATA_FLASH_SW, *((volatile UINT32 *)0x20000));
+            REG_WRITE(REG_FLASH_DATA_FLASH_SW, *((volatile UINT32 *)0x20000));
+        } else {
+            ret = FLASH_FAILURE;
+        }
         break;
 
     case CMD_FLASH_WRITE_ENABLE:
