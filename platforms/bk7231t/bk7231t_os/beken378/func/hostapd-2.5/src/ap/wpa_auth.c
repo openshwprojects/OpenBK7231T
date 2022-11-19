@@ -292,7 +292,7 @@ static void wpa_rekey_gtk(void *eloop_ctx, void *timeout_ctx)
 
 static void wpa_rekey_ptk(void *eloop_ctx, void *timeout_ctx)
 {
-	struct wpa_authenticator *wpa_auth = eloop_ctx;
+	//struct wpa_authenticator *wpa_auth = eloop_ctx;
 	struct wpa_state_machine *sm = timeout_ctx;
 
 	wpa_auth_logger(wpa_auth, sm->addr, LOGGER_DEBUG, "rekeying PTK");
@@ -1355,7 +1355,7 @@ static int wpa_gmk_to_gtk(const u8 *gmk, const char *label, const u8 *addr,
 
 static void wpa_send_eapol_timeout(void *eloop_ctx, void *timeout_ctx)
 {
-	struct wpa_authenticator *wpa_auth = eloop_ctx;
+	//struct wpa_authenticator *wpa_auth = eloop_ctx;
 	struct wpa_state_machine *sm = timeout_ctx;
 
 	sm->pending_1_of_4_timeout = 0;

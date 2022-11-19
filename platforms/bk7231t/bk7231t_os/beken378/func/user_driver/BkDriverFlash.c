@@ -167,7 +167,7 @@ OSStatus bk_flash_write( bk_partition_t inPartition, volatile uint32_t off_set, 
     ASSERT(DD_HANDLE_UNVALID != flash_hdl);
 
     GLOBAL_INT_DISABLE();
-    ddev_write(flash_hdl, inBuffer, inBufferLength, start_addr);
+    ddev_write(flash_hdl, (char*)inBuffer, inBufferLength, start_addr);
     GLOBAL_INT_RESTORE();
 
     return kNoErr;
@@ -190,7 +190,7 @@ OSStatus bk_flash_read( bk_partition_t inPartition, volatile uint32_t off_set, u
     ASSERT(DD_HANDLE_UNVALID != flash_hdl);
 
     GLOBAL_INT_DISABLE();
-    ddev_read(flash_hdl, outBuffer, inBufferLength, start_addr);
+    ddev_read(flash_hdl, (char*)outBuffer, inBufferLength, start_addr);
     GLOBAL_INT_RESTORE();
 
     return kNoErr;
@@ -228,7 +228,7 @@ OSStatus test_flash_write(volatile uint32_t start_addr, uint32_t len)
 	for(;addr<tmp;addr+=256)
 	{
 		os_printf("write addr(size:256):%d\r\n",addr);
-    	ddev_write(flash_hdl, buf, 256, addr);
+    	ddev_write(flash_hdl, (char*)buf, 256, addr);
 	}
 	
 	return kNoErr;
@@ -268,7 +268,7 @@ OSStatus test_flash_read(volatile uint32_t start_addr, uint32_t len)
 	for(;addr<tmp;addr+=256)
 	{
 		os_memset(buf,0,256);
-    	ddev_read(flash_hdl, buf, 256, addr);
+    	ddev_read(flash_hdl, (char*)buf, 256, addr);
 		os_printf("read addr:%x\r\n",addr);
 		for(i=0;i<16;i++)
 		{
@@ -287,7 +287,8 @@ OSStatus test_flash_read_time(volatile uint32_t start_addr, uint32_t len)
 {
  	UINT32 status, time_start, time_end;
     DD_HANDLE flash_hdl;
-    uint32_t j,tmp;
+    //uint32_t j;
+    uint32_t tmp;
 	u8 buf[256];
 	uint32_t addr = start_addr;
 	uint32_t length = len;
@@ -300,7 +301,7 @@ OSStatus test_flash_read_time(volatile uint32_t start_addr, uint32_t len)
 	for(;addr<tmp;addr+=256)
 	{
 		os_memset(buf,0,256);
-    	ddev_read(flash_hdl, buf, 256, addr);
+    	ddev_read(flash_hdl, (char*)buf, 256, addr);
 	}
     beken_time_get_time((beken_time_t *)&time_end);
     os_printf("read time end:%d\r\n", time_end);

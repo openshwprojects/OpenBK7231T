@@ -33,6 +33,7 @@ static volatile UINT32 current_seconds = 0;
 static UINT32 second_countdown = FCLK_SECOND;
 
 extern void mcu_ps_increase_clr(void);
+extern uint32_t mcu_ps_need_pstick(void);
 #define         ONE_CAL_TIME        15000
 
 typedef struct
@@ -196,7 +197,7 @@ extern int increase_tick;
 UINT32 timer_cal_tick(void)
 {
     UINT32 fclk, tmp2;
-    UINT32 machw;
+    UINT32 machw = 0;
     INT32 lost;
     GLOBAL_INT_DECLARATION();
 
@@ -239,10 +240,10 @@ UINT32 timer_cal_tick(void)
     GLOBAL_INT_RESTORE();
     return 0 ;
 
-CAL_RESET:
-    timer_cal_init();
-    GLOBAL_INT_RESTORE();
-    return 0 ;
+//CAL_RESET:
+//    timer_cal_init();
+//    GLOBAL_INT_RESTORE();
+//    return 0 ;
 }
 
 

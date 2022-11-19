@@ -75,7 +75,7 @@ static int set_wpa_psk(struct wpa_ssid *ssid)
         return 1;
 	} else if (g_sta_param_ptr->key_len == 64) {
 		wpa_printf(MSG_ERROR, "use PSK");
-		if (hexstr2bin(g_sta_param_ptr->key, ssid->psk, 32) ||
+		if (hexstr2bin((char*)g_sta_param_ptr->key, ssid->psk, 32) ||
 		    g_sta_param_ptr->key[64] != '\0') {
 			wpa_printf(MSG_ERROR, "Invalid PSK '%s'.",
 				    g_sta_param_ptr->key);
@@ -107,7 +107,7 @@ static int set_wep_key(struct wpa_ssid*ssid)
 	}else if(g_sta_param_ptr->key_len == 10 ||
 				g_sta_param_ptr->key_len == 26){
 		ssid->wep_key_len[0] = g_sta_param_ptr->key_len / 2;
-		hexstr2bin(g_sta_param_ptr->key, ssid->wep_key[0],ssid->wep_key_len[0] ); 
+		hexstr2bin((char*)g_sta_param_ptr->key, ssid->wep_key[0],ssid->wep_key_len[0] ); 
 	}else{
 		errors++;
 	}
@@ -263,7 +263,7 @@ static struct wpa_ssid * wpa_config_read_network(int *line, int id)
 
 	wpa_config_set_network_defaults(ssid);
 
-	ssid->ssid = dup_binstr(g_sta_param_ptr->ssid.array, g_sta_param_ptr->ssid.length);
+	ssid->ssid = (uint8_t*)dup_binstr(g_sta_param_ptr->ssid.array, g_sta_param_ptr->ssid.length);
 	ssid->ssid_len = g_sta_param_ptr->ssid.length;
 	ssid->key_mgmt = 0;
 
@@ -345,7 +345,7 @@ error:
 
 int wpa_config_write(const char *name, struct wpa_config *config)
 {
-	struct wpa_ssid *ssid;
+	//struct wpa_ssid *ssid;
 	//struct wpa_config_blob *blob;
 
 	wpa_printf(MSG_DEBUG, "Writing configuration file '%s'", name);

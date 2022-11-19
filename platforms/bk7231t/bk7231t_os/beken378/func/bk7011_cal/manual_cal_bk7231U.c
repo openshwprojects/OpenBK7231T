@@ -83,7 +83,7 @@
 #define GET_TXPWR_FLAG(p)               (((p)->value>>FLAG_POSI)&FLAG_MASK)
 #define SET_TXPWR_FLAG(p, flag)         {(p)->value &= (~(FLAG_MASK<<FLAG_POSI)); \
                                          (p)->value |= ((flag&FLAG_MASK)<<FLAG_POSI);}
-#define INIT_TXPWR_VALUE(gain, flag)    (((flag&FLAG_MASK)<<FLAG_POSI)|(gain&GAIN_MASK))
+#define INIT_TXPWR_VALUE(gain, flag)    {(((flag&FLAG_MASK)<<FLAG_POSI)|(gain&GAIN_MASK))}
 typedef struct txpwr_st {
     UINT8 value;
 } TXPWR_ST, *TXPWR_PTR;
@@ -415,6 +415,7 @@ UINT32 g_cmtag_flag = LOAD_FROM_CALI;
 int manual_set_cmtag(UINT32 status)
 {
     g_cmtag_flag = status;
+    return 0;
 }
 
 int manual_cal_need_load_cmtag_from_flash(void)
@@ -811,7 +812,7 @@ static void manual_cal_do_ble_fitting(void)
                 TXPWR_PTR ptr;
                 base = &tab_ptr[19];
                 ptr = &tab_ptr[0];
-                SET_TXPWR_GAIN(ptr, GET_TXPWR_GAIN(base) + 4);
+                SET_TXPWR_GAIN(ptr, ((GET_TXPWR_GAIN(base)) + 4));
                 SET_TXPWR_FLAG(ptr, TXPWR_ELEM_INUSED);
 
                 // fitting ch10, use ch0, ch19 
@@ -1127,6 +1128,7 @@ static int manual_cal_fit_txpwr_tab_n_20(UINT32 differ)
         os_memcpy(&tab_ptr[i], &tab_ptr_temp[i], sizeof(TXPWR_ST));
         manual_cal_adjust_fitting(&tab_ptr[i], differ);
     }
+    return 0;
 }
 
 static int manual_cal_fit_txpwr_tab_n_40(UINT32 differ)
@@ -1141,6 +1143,7 @@ static int manual_cal_fit_txpwr_tab_n_40(UINT32 differ)
         os_memcpy(&tab_ptr[i], &tab_ptr_temp[i], sizeof(TXPWR_ST));
         manual_cal_adjust_fitting(&tab_ptr[i], differ);
     }
+    return 0;
 }
 
 void manual_cal_set_dif_g_n20(UINT32 diff)
@@ -1291,7 +1294,7 @@ static UINT8 manual_cal_update_flash_area(UINT32 addr_offset, char *buf, UINT32 
 
 write_again:
     if(addr_offset) {   
-        status = ddev_read(flash_handle, read_buf, write_len, write_addr);
+        status = ddev_read(flash_handle, (char*)read_buf, write_len, write_addr);
         if(status != FLASH_SUCCESS) {
             MCAL_FATAL("cann't read flash before write\r\n");
             ret = 1;
@@ -1335,7 +1338,7 @@ write_again:
 
         os_memset(check_buf, 0, len);   
         
-        status = ddev_read(flash_handle, check_buf, len, check_addr);
+        status = ddev_read(flash_handle, (char*)check_buf, len, check_addr);
         if(status != FLASH_SUCCESS) {
             MCAL_FATAL("cann't read flash in check\r\n");
             ret = 1;
@@ -1916,7 +1919,8 @@ int manual_cal_save_chipinfo_tab_to_flash(void)
     tag_com_ptr = (TAG_COMM_PTR)(info_buf);
     tag_com.head.type = TXID_ADC;
     tag_com.head.len = sizeof(tag_com.value);
-    tag_com.value = *((UINT32 *)&saradc_val);
+    UINT32 *p_temp = (UINT32 *)&saradc_val;
+    tag_com.value = *p_temp;
     os_memcpy(tag_com_ptr, &tag_com, sizeof(TAG_COMM_ST));
 	
     // for tag lpf i&q
@@ -2115,7 +2119,7 @@ void manual_cal_clear_otp_flash(void)
     UINT8 *buf = (UINT8*)os_malloc(flash_len); 
 
     os_memset(buf, 0xff, sizeof(flash_len));
-    manual_cal_update_flash_area(0, buf, flash_len);
+    manual_cal_update_flash_area(0, (char*)buf, flash_len);
     os_free(buf);
 }
 
@@ -2468,9 +2472,11 @@ int manual_cal_save_cailmain_tx_tab_to_flash(void)
     TAG_COMM_ST tag_comm;
     TAG_COMM_PTR tag_comm_ptr = NULL;
 
-    UINT32 status, addr, addr_start;
+    UINT32 status;
+    //UINT32 addr;
+    UINT32 addr_start;
     DD_HANDLE flash_handle;
-    TXPWR_ELEM_ST head;
+    //TXPWR_ELEM_ST head;
 	#if CFG_SUPPORT_ALIOS
 	hal_logic_partition_t *pt = hal_flash_get_info(HAL_PARTITION_RF_FIRMWARE);
 	#else
@@ -2654,9 +2660,11 @@ int manual_cal_save_cailmain_rx_tab_to_flash(void)
     TAG_RX_DC_ST tag_rx_dc;
     TAG_RX_DC_PTR tag_rx_dc_ptr = NULL;
 
-    UINT32 status, addr, addr_start;
+    UINT32 status;
+    //UINT32 addr;
+    UINT32 addr_start;
     DD_HANDLE flash_handle;
-    TXPWR_ELEM_ST head;
+    //TXPWR_ELEM_ST head;
 	#if CFG_SUPPORT_ALIOS
 	hal_logic_partition_t *pt = hal_flash_get_info(HAL_PARTITION_RF_FIRMWARE);
 	#else

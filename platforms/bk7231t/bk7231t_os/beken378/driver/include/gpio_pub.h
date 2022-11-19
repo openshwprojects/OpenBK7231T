@@ -147,7 +147,7 @@ __inline static void bk_gpio_config_input(GPIO_INDEX id)
     UINT32 param;
     
     param = GPIO_CFG_PARAM(id, GMODE_INPUT);
-    ret = sddev_control(GPIO_DEV_NAME, CMD_GPIO_CFG, &param);
+    ret = sddev_control((char*)GPIO_DEV_NAME, CMD_GPIO_CFG, &param);
     
     ASSERT(GPIO_SUCCESS == ret);
 }
@@ -158,7 +158,7 @@ __inline static void bk_gpio_config_input_pup(GPIO_INDEX id)
     UINT32 param;
     
     param = GPIO_CFG_PARAM(id, GMODE_INPUT_PULLUP);
-    ret = sddev_control(GPIO_DEV_NAME, CMD_GPIO_CFG, &param);
+    ret = sddev_control((char*)GPIO_DEV_NAME, CMD_GPIO_CFG, &param);
     
     ASSERT(GPIO_SUCCESS == ret);
 }
@@ -169,7 +169,7 @@ __inline static void bk_gpio_config_input_pdwn(GPIO_INDEX id)
 	UINT32 param;
     
 	param = GPIO_CFG_PARAM(id, GMODE_INPUT_PULLDOWN);
-	ret = sddev_control(GPIO_DEV_NAME, CMD_GPIO_CFG, &param);
+	ret = sddev_control((char*)GPIO_DEV_NAME, CMD_GPIO_CFG, &param);
     
 	ASSERT(GPIO_SUCCESS == ret);
 }
@@ -179,7 +179,7 @@ __inline static uint32_t bk_gpio_input(GPIO_INDEX id)
     UINT32 ret;                                             
     UINT32 param = id;   
     
-    ret = sddev_control(GPIO_DEV_NAME, CMD_GPIO_INPUT, &param); 
+    ret = sddev_control((char*)GPIO_DEV_NAME, CMD_GPIO_INPUT, &param); 
     
     return ret;                      
 }
@@ -191,7 +191,7 @@ __inline static void bk_gpio_config_output(GPIO_INDEX id)
 	UINT32 param;
     
 	param = GPIO_CFG_PARAM(id, GMODE_OUTPUT);
-	ret = sddev_control(GPIO_DEV_NAME, CMD_GPIO_CFG, &param);
+	ret = sddev_control((char*)GPIO_DEV_NAME, CMD_GPIO_CFG, &param);
 	ASSERT(GPIO_SUCCESS == ret);  
 }
 
@@ -201,7 +201,7 @@ __inline static void bk_gpio_output(GPIO_INDEX id,UINT32 val)
     UINT32 param;
     
     param = GPIO_OUTPUT_PARAM(id, val);
-    ret = sddev_control(GPIO_DEV_NAME, CMD_GPIO_OUTPUT, &param);
+    ret = sddev_control((char*)GPIO_DEV_NAME, CMD_GPIO_OUTPUT, &param);
     ASSERT(GPIO_SUCCESS == ret);           
 }
 
@@ -210,7 +210,7 @@ __inline static void bk_gpio_output_reverse(GPIO_INDEX id)
     UINT32 ret;
     UINT32 param = id;
     
-    ret = sddev_control(GPIO_DEV_NAME, CMD_GPIO_OUTPUT_REVERSE, &param);
+    ret = sddev_control((char*)GPIO_DEV_NAME, CMD_GPIO_OUTPUT_REVERSE, &param);
     ASSERT(GPIO_SUCCESS == ret);            
 }
 		

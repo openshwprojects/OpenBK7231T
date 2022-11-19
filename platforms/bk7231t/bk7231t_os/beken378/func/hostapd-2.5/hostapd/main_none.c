@@ -198,7 +198,7 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 	bss = conf->last_bss;
     
 	os_strcpy(bss->iface, bss_iface);
-    wifi_get_mac_address((u8*)&bss->bssid, CONFIG_ROLE_AP);
+    wifi_get_mac_address((char*)&bss->bssid, CONFIG_ROLE_AP);
 	/* set default driver based on configuration */
 	conf->driver = wpa_drivers[0];
 	conf->last_bss = conf->bss[0];
@@ -314,9 +314,10 @@ static int hostapd_driver_init(struct hostapd_iface *iface)
 	params.bridge = os_calloc(hapd->iface->num_bss, sizeof(char *));
 	if (params.bridge == NULL)
 		return -1;
-	for (i = 0; i < hapd->iface->num_bss; i++) {
-		struct hostapd_data *bss = hapd->iface->bss[i];
+	for (i = 0; i < hapd->iface->num_bss; i++) 
+    {
 #ifdef CONFIG_FULL_HOSTAPD
+		struct hostapd_data *bss = hapd->iface->bss[i];
 		if (bss->conf->bridge[0]) {
 			params.bridge[i] = bss->conf->bridge;
 		}
@@ -336,8 +337,11 @@ static int hostapd_driver_init(struct hostapd_iface *iface)
 	}
 
 	if (hapd->driver->get_capa &&
-	    hapd->driver->get_capa(hapd->drv_priv, &capa) == 0) {
+	    hapd->driver->get_capa(hapd->drv_priv, &capa) == 0) 
+    {
+#ifdef CONFIG_FULL_HOSTAPD
 		struct wowlan_triggers *triggs;
+#endif
 
 		iface->drv_flags = capa.flags;
 		iface->smps_modes = capa.smps_modes;

@@ -64,7 +64,7 @@ void key_unconfig(void)
 	}
 }
 
-uint8_t key_get_gpio_value(void)
+uint8_t key_get_gpio_value(void *self)
 {
 	return bk_gpio_input(GPIO_TEST_ID);
 }
@@ -72,6 +72,7 @@ uint8_t key_get_gpio_value(void)
 uint8_t key_gpio_init(void)
 {
 	bk_gpio_config_input_pup(GPIO_TEST_ID);
+    return GPIO_SUCCESS;
 }
 
 void key_item_configure(void)

@@ -32,7 +32,7 @@
 /* keil Compiler intrinsics for controlling IRQ and FIQ interrupts
 */
  
- 
+#undef GLOBAL_INT_START 
 #define GLOBAL_INT_START(); \
 do { \
 	portENABLE_FIQ(); \
@@ -44,6 +44,7 @@ do { \
  * it could handle.
  */
 
+#undef GLOBAL_INT_STOP
 #define GLOBAL_INT_STOP();		\
 do { \
 						portDISABLE_FIQ(); \
@@ -55,6 +56,7 @@ do { \
  * last one will close the brace that the current macro opens.  This means that both
  * macros must be located at the same scope level.
  */
+#undef GLOBAL_INT_DIS
 #define GLOBAL_INT_DIS(); 		\
 do { 								\
     uint32_t  fiq_tmp; 				\
@@ -62,6 +64,7 @@ do { 								\
 		fiq_tmp = portDISABLE_FIQ();\
 		irq_tmp = portDISABLE_IRQ();
 
+#undef GLOBAL_INT_RES
 #define GLOBAL_INT_RES();		\
 			if(!fiq_tmp)			\
 			{                     	\

@@ -10,6 +10,11 @@
 #include "tuya_hal_storge.h"
 #include "../errors_compat.h"
 
+#include "start_type_pub.h"
+#include "BkDriverFlash.h"
+
+RESET_SOURCE_STATUS bk_misc_get_start_type();
+
 /***********************************************************
 *************************micro define***********************
 ***********************************************************/
@@ -75,8 +80,8 @@ int tuya_hal_flash_read(const uint32_t addr, uint8_t *dst, const uint32_t size)
 	hal_flash_lock();
 
     DD_HANDLE flash_handle;
-    flash_handle = ddev_open(FLASH_DEV_NAME, &status, 0);
-    ddev_read(flash_handle, dst, size, addr);
+    flash_handle = ddev_open(FLASH_DEV_NAME, (UINT32*)&status, 0);
+    ddev_read(flash_handle, (char *)dst, size, addr);
     ddev_close(flash_handle);
     
 	hal_flash_unlock();
@@ -90,7 +95,7 @@ static uint32_t __uni_flash_is_protect_all(void)
     uint32_t status;
     uint32_t param;
 	
-    flash_handle = ddev_open(FLASH_DEV_NAME, &status, 0);
+    flash_handle = ddev_open(FLASH_DEV_NAME, (UINT32*)&status, 0);
     ddev_control(flash_handle, CMD_FLASH_GET_PROTECT, (void *)&param);	
 	ddev_close(flash_handle);	
 	//PR_NOTICE("_uni_flash_is_protect_all:%x\r\n",param);
@@ -119,7 +124,7 @@ int tuya_hal_flash_write(const uint32_t addr, const uint8_t *src, const uint32_t
 	hal_flash_lock();
 
     protect_flag = __uni_flash_is_protect_all();
-    flash_handle = ddev_open(FLASH_DEV_NAME, &status, 0);
+    flash_handle = ddev_open(FLASH_DEV_NAME, (UINT32*)&status, 0);
 
     if(protect_flag)
     {
@@ -166,7 +171,7 @@ int tuya_hal_flash_erase(const uint32_t addr, const uint32_t size)
 	hal_flash_lock();
 
     protect_flag = __uni_flash_is_protect_all();
-    flash_handle = ddev_open(FLASH_DEV_NAME, &status, 0);
+    flash_handle = ddev_open(FLASH_DEV_NAME, (UINT32*)&status, 0);
 
     if(protect_flag)
     {
@@ -221,7 +226,7 @@ int tuya_hal_flash_set_protect(const bool enable)
     uint32_t  param;
     uint32_t status;
 
-    flash_handle = ddev_open(FLASH_DEV_NAME, &status, 0);
+    flash_handle = ddev_open(FLASH_DEV_NAME, (UINT32 *)&status, 0);
 
     if(enable)
     {

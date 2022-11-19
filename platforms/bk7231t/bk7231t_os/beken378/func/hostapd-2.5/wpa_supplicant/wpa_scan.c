@@ -1104,6 +1104,7 @@ int wpa_supplicant_delayed_sched_scan(struct wpa_supplicant *wpa_s,
  */
 int wpa_supplicant_req_sched_scan(struct wpa_supplicant *wpa_s)
 {
+#if 0
 	struct wpa_driver_scan_params params;
 	struct wpa_driver_scan_params *scan_params;
 	enum wpa_states prev_state;
@@ -1113,6 +1114,7 @@ int wpa_supplicant_req_sched_scan(struct wpa_supplicant *wpa_s)
 	unsigned int max_sched_scan_ssids;
 	int wildcard = 0;
 	int need_ssids;
+#endif
 
 	if (!wpa_s->sched_scan_supported)
 		return -1;
@@ -1343,8 +1345,8 @@ scan:
 	if (!ssid)
 		wpa_s->prev_sched_ssid = NULL;
 
-	return 0;
 #endif
+    return 0;
 }
 
 

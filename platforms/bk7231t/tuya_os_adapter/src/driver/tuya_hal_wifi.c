@@ -12,6 +12,21 @@
 #include "../system/tuya_hal_system_internal.h"
 #include "../errors_compat.h"
 #include "uni_log.h"
+#if defined(PLATFORM_BEKEN)
+#include "bk7011_cal_pub.h"
+#include "param_config.h"
+
+int bk_wlan_dtim_rf_ps_timer_pause(void);
+int bk_wlan_dtim_rf_ps_timer_start(void);
+int bk_wlan_get_channel(void);
+#endif
+
+#include "mem_pub.h"
+#include "start_type_pub.h"
+#include "str_pub.h"
+
+VOID *Malloc(IN SIZE_T reqSize);
+VOID Free(IN VOID *ptr);
 
 /***********************************************************
 *************************micro define***********************
@@ -54,7 +69,7 @@ static bool lp_mode = FALSE;
 static void __dhcp_thread(void* pArg);
 static void __hwl_promisc_callback(unsigned char *buf, unsigned int len, void* userdata);
 
-static VOID scan_cb(void *ctxt)
+static VOID scan_cb(void *ctxt, uint8_t vif_idx)
 {
     if(scanHandle)
     {
@@ -73,7 +88,8 @@ int tuya_hal_wifi_all_ap_scan(AP_IF_S **ap_ary, uint32_t *num)
     AP_IF_S *item;
     AP_IF_S *array;
     OPERATE_RET ret;
-    INT_T i,index;
+    INT_T i;
+    //INT_T index;
     INT_T scan_cnt;
     struct scanu_rst_upload *scan_rst;
     struct sta_scan_res *scan_rst_ptr;
@@ -121,8 +137,8 @@ int tuya_hal_wifi_all_ap_scan(AP_IF_S **ap_ary, uint32_t *num)
         item->channel = scan_rst_ptr->channel;
         item->rssi = scan_rst_ptr->level;
         os_memcpy(item->bssid, scan_rst_ptr->bssid, 6);
-        os_strcpy(item->ssid, scan_rst_ptr->ssid);
-        item->s_len = os_strlen(item->ssid);
+        os_strcpy((char *)item->ssid, scan_rst_ptr->ssid);
+        item->s_len = os_strlen((char *)item->ssid);
     }
     
     *ap_ary = array;
@@ -156,7 +172,7 @@ int tuya_hal_wifi_assign_ap_scan(const char *ssid, AP_IF_S **ap)
     }
 
     mhdr_scanu_reg_cb(scan_cb, 0);
-    bk_wlan_start_assign_scan(&ssid, 1);
+    bk_wlan_start_assign_scan((UINT8 **)&ssid, 1);
 
     tuya_hal_semaphore_wait(scanHandle);
     tuya_hal_semaphore_release(scanHandle);
@@ -189,8 +205,8 @@ int tuya_hal_wifi_assign_ap_scan(const char *ssid, AP_IF_S **ap)
         item->channel = scan_rst_ptr->channel;
         item->rssi = scan_rst_ptr->level;
         os_memcpy(item->bssid, scan_rst_ptr->bssid, 6);
-        os_strcpy(item->ssid, scan_rst_ptr->ssid);
-        item->s_len = os_strlen(item->ssid);
+        os_strcpy((char *)item->ssid, scan_rst_ptr->ssid);
+        item->s_len = os_strlen((char *)item->ssid);
     }
 
     *ap = array;
@@ -593,6 +609,10 @@ int tuya_hal_wifi_station_get_status(WF_STATION_STAT_E *stat)
             case RW_EVT_STA_CONNECT_FAILED:         *stat = WSS_CONN_FAIL;          break;
             case RW_EVT_STA_CONNECTED:              *stat = WSS_CONN_SUCCESS;       break;
             case RW_EVT_STA_GOT_IP:                 *stat = WSS_GOT_IP;             break;
+            case RW_EVT_AP_CONNECTED:               *stat = WSS_CONN_SUCCESS;       break;
+            case RW_EVT_AP_DISCONNECTED:            *stat = WSS_CONN_FAIL;          break;
+            case RW_EVT_AP_CONNECT_FAILED:          *stat = WSS_CONN_FAIL;          break;
+            case RW_EVT_MAX: break;
         }
     }
     
@@ -721,7 +741,7 @@ void hwl_wf_get_country_code(unsigned char *country_code)
 	wifi_country_t country;
 	
     bk_wlan_get_country(&country);
-	os_strcpy(country_code, country.cc);
+	os_strcpy((char *)country_code, country.cc);
 }
 
 static uint32_t lp_rcnt = 0;
@@ -761,7 +781,7 @@ int tuya_hal_wifi_lowpower_enable(void)
 
 int tuya_hal_wifi_send_mgnt(const uint8_t *buf, const uint32_t len)
 {
-    int ret = bk_wlan_send_80211_raw_frame(buf, len);
+    int ret = bk_wlan_send_80211_raw_frame((uint8_t *)buf, len);
     if(ret < 0) {
         return OPRT_COM_ERROR;
     }
@@ -781,7 +801,7 @@ static WIFI_REV_MGNT_CB mgnt_recv_cb = NULL;
 static VOID wifi_mgnt_frame_rx_handler(const uint8_t *frame, int len)
 {
     if (mgnt_recv_cb) {
-        mgnt_recv_cb(frame, len);
+        mgnt_recv_cb((uint8_t *)frame, len);
     }
 }
 
@@ -814,7 +834,7 @@ static OPERATE_RET wifi_mgnt_frame_malloc_post(UCHAR_T *frame, UINT_T len)
     
     UCHAR_T *frame_msg = NULL;
 
-    frame_msg = Malloc(len);
+    frame_msg = (UCHAR_T *)Malloc(len);
     if (NULL == frame_msg) {
         PR_ERR("frame msg malloc failed");
         return OPRT_MALLOC_FAILED;
@@ -926,7 +946,7 @@ int tuya_hal_wifi_register_recv_mgnt_callback(bool enable, WIFI_REV_MGNT_CB recv
         if((mode == WWM_LOWPOWER) || (mode == WWM_SNIFFER)) {
             return OPRT_COM_ERROR;
         }
-		bk_wlan_reg_rx_mgmt_cb(wifi_mgnt_frame_rx_notify, 0);
+		bk_wlan_reg_rx_mgmt_cb((mgmt_rx_cb_t)wifi_mgnt_frame_rx_notify, 0);
         
         ty_wifi_powersave_disable();
         ty_wf_mgnt_frame_thread_init();

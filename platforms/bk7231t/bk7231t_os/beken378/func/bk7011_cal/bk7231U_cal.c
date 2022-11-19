@@ -68,7 +68,7 @@ extern UINT32 ble_in_dut_mode(void);
 extern uint8 is_rf_switch_to_ble(void);
 extern uint32_t get_ate_mode_state(void);
 extern void rwnx_cal_enable_lpfcap_iq_from_digit(UINT32 enable);
-
+extern int manual_cal_load_calimain_tag_from_flash(UINT32 tag, int *tag_addr, int tag_size);
 
 static INT32 gtx_dc_n = 0;//the times of first dc cal. 
 static UINT32 gst_rx_adc = CAL_DELAY100US;
@@ -1771,7 +1771,8 @@ void rwnx_cal_set_txpwr_by_rate(INT32 rate, UINT32 test_mode)
 
 void rwnx_cal_set_txpwr_by_channel(UINT32 channel)
 {
-    UINT32 ret, pwr_gain, rate;
+    //UINT32 ret;
+    UINT32 pwr_gain, rate;
     
     rate = EVM_DEFUALT_BLE_RATE;
     
@@ -3798,6 +3799,11 @@ INT32 bk7011_cal_tx_dc(INT32 *val)
         low = UNSIGNEDOFFSET10 - 3 * MINOFFSET ;
         high = UNSIGNEDOFFSET10 + 3 * MINOFFSET ;
     }
+    else 
+    {
+        low = BK7011RCBEKEN.REG0x4F->bits.TXIDCCOMP;
+        high = BK7011RCBEKEN.REG0x4F->bits.TXIDCCOMP;
+    }
 
     BK7011RCBEKEN.REG0x4F->bits.TXIDCCOMP = low;
 
@@ -5360,7 +5366,10 @@ INT32 bk7011_cal_rx_iq(INT32 *val)
 
     do 
     {
-        int ret_i, tx_ifilter, ret_q, tx_qfilter;
+        int ret_i;
+        //int tx_ifilter;
+        int ret_q;
+        //int tx_qfilter;
 
         if(manual_cal_need_load_cmtag_from_flash() == 0)
         {

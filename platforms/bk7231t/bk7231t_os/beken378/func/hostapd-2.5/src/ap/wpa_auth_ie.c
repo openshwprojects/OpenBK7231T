@@ -378,7 +378,7 @@ int wpa_validate_wpa_ie(struct wpa_authenticator *wpa_auth,
 	struct wpa_ie_data data;
 	int ciphers, key_mgmt, res, version;
 	u32 selector;
-	size_t i;
+	//size_t i;
 
 	if (wpa_auth == NULL || sm == NULL)
 		return WPA_NOT_ENABLED;

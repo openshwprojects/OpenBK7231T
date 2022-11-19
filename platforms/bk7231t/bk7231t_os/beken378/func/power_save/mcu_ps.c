@@ -37,7 +37,7 @@ extern UINT32 ps_timer3_disable(void);
 static UINT32 sleep_pwm_t, wkup_type;
 #endif
 
-void mcu_ps_cal_increase_tick(UINT32 *lost_p);
+void mcu_ps_cal_increase_tick(INT32 *lost_p);
 
 void peri_busy_count_add(void )
 {
@@ -99,7 +99,8 @@ void mcu_ps_disable(void )
 
 UINT32 mcu_power_save(UINT32 sleep_tick)
 {
-    UINT32 sleep_ms, sleep_pwm_t, param, uart_miss_us = 0, miss_ticks = 0;
+    UINT32 sleep_ms, sleep_pwm_t, param, uart_miss_us = 0;
+    INT32 miss_ticks = 0;
     UINT32 wkup_type, wastage = 0;
     GLOBAL_INT_DECLARATION();
     GLOBAL_INT_DISABLE();
@@ -174,7 +175,7 @@ UINT32 mcu_power_save(UINT32 sleep_tick)
                 }
                 else
                 {
-                    miss_ticks =  (ps_timer3_disable() + (uart_miss_us + wastage) / 1000) / FCLK_DURATION_MS;
+                    miss_ticks =  (INT32)((ps_timer3_disable() + (uart_miss_us + wastage) / 1000) / FCLK_DURATION_MS);
                 }
             }
 
@@ -188,7 +189,7 @@ UINT32 mcu_power_save(UINT32 sleep_tick)
 
                 if(ps_pwm_int_status())
                 {
-                    miss_ticks = (sleep_pwm_t + (uart_miss_us >> 5) + wastage) / (FCLK_DURATION_MS * 32);
+                    miss_ticks = (INT32((sleep_pwm_t + (uart_miss_us >> 5) + wastage) / (FCLK_DURATION_MS * 32));
                 }
                 else
                 {
@@ -198,7 +199,7 @@ UINT32 mcu_power_save(UINT32 sleep_tick)
                     }
                     else
                     {
-                        miss_ticks = ((uart_miss_us >> 5) + wastage) / (FCLK_DURATION_MS * 32);
+                        miss_ticks = (INT32)(((uart_miss_us >> 5) + wastage) / (FCLK_DURATION_MS * 32));
                     }
                 }
 
@@ -297,9 +298,9 @@ void mcu_ps_increase_clr(void)
     increase_tick = 0;
 }
 
-void mcu_ps_cal_increase_tick(UINT32 *lost_p)
+void mcu_ps_cal_increase_tick(INT32 *lost_p)
 {
-    int32 lost = * lost_p;
+    INT32 lost = *lost_p;
     GLOBAL_INT_DECLARATION();
 
     if((lost <= 0) || (0 == increase_tick))
@@ -343,7 +344,7 @@ uint32_t mcu_ps_need_pstick(void)
     
     if(((need_pass ++)%5) == 0)
     {
-        uint32_t lost = FCLK_DURATION_MS;
+        INT32 lost = FCLK_DURATION_MS;
         mcu_ps_cal_increase_tick(&lost);
         if(!lost)
         {
@@ -483,7 +484,7 @@ UINT32 mcu_ps_machw_cal(void)
     UINT32 fclk, tmp2;
 #endif
     UINT32 machw, tmp1;
-    UINT32 lost;
+    INT32 lost;
     GLOBAL_INT_DECLARATION();
 
     if(!((1 == mcu_ps_info.mcu_ps_on) && power_save_if_ps_rf_dtim_enabled()))

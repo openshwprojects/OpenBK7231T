@@ -2157,7 +2157,7 @@ void wpa_config_free_cred(struct wpa_cred *cred)
 void wpa_config_free(struct wpa_config *config)
 {
 	struct wpa_ssid *ssid, *prev = NULL;
-	struct wpa_cred *cred, *cprev;
+	//struct wpa_cred *cred, *cprev;
 	int i;
 
 	ssid = config->ssid;
@@ -3585,7 +3585,9 @@ static int wpa_config_process_load_dynamic_eap(
 	const struct global_parse_data *data, struct wpa_config *config,
 	int line, const char *so)
 {
+#ifdef CONFIG_FULL_SUPPLICANT    
 	int ret;
+    
 	wpa_printf(MSG_DEBUG, "load_dynamic_eap=%s", so);
 	ret = eap_peer_method_load(so);
 	if (ret == -2) {
@@ -3596,7 +3598,7 @@ static int wpa_config_process_load_dynamic_eap(
 			   "method '%s'.", line, so);
 		return -1;
 	}
-	
+#endif
 	return 0;
 }
 

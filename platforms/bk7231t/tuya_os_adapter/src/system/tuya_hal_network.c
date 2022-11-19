@@ -96,7 +96,7 @@ UNW_IP_ADDR_T tuya_hal_net_addr(const char *cp)
 #define UNW_TO_SYS_FD_SET(fds)  ((fd_set*)fds)
 
 // 编译期结构体大小检查，如果此处编译错误，请加大 UNW_FD_MAX_COUNT 的值
-typedef static_assert_impl_type[(sizeof(UNW_FD_SET_T)>=sizeof(fd_set))?1:-1]; // 编译期校验
+//typedef static_assert_impl_type[(sizeof(UNW_FD_SET_T)>=sizeof(fd_set))?1:-1]; // 编译期校验
 
 int tuya_hal_net_fd_set(int fd, UNW_FD_SET_T* fds)
 {

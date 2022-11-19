@@ -23,6 +23,13 @@
 
 static struct eloop_data eloop;
 
+int hostapd_is_exiting(void);
+int hostapd_exit_handler(void);
+int hostapd_exit_done(void);
+int supplicant_is_exiting(void);
+int supplicant_exit_handler(void);
+int supplicant_exit_done(void);
+
 int eloop_get_signal_count(void)
 {
    return eloop.signal_count;

@@ -22,6 +22,7 @@
 #define LOGN PR_NOTICE
 #define LOGE PR_ERR
 #else
+#include "uart_pub.h"
 #define LOGD(...) bk_printf("[SEM DEBUG]" __VA_ARGS__)
 #define LOGT(...) bk_printf("[SEM TRACE]" __VA_ARGS__)
 #define LOGN(...) bk_printf("[SEM NOTICE]" __VA_ARGS__)

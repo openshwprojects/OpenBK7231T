@@ -29,7 +29,7 @@ static UINT32 search_info_tbl(UINT8 *buf,UINT32 *cfg_len)
 	 	*cfg_len = head.len + sizeof(TLV_HEADER_ST);
         ret = 1;
 		if(buf != NULL)
-			ddev_read(flash_handle, buf, *cfg_len, pt->partition_start_addr);
+			ddev_read(flash_handle, (char*)buf, *cfg_len, pt->partition_start_addr);
     } 
     ddev_close(flash_handle);
     return ret;
@@ -189,11 +189,12 @@ UINT32 get_info_item(NET_INFO_ITEM item,UINT8 *ptr0,UINT8 *ptr1, UINT8 *ptr2)
 
 UINT32 save_info_item(NET_INFO_ITEM item,UINT8 *ptr0,UINT8*ptr1,UINT8 *ptr2)
 {
-	UINT32 status, addr_offset,cfg_tbl_len,item_len,tmp;
+	//UINT32 status;
+    UINT32 addr_offset,cfg_tbl_len,item_len,tmp;
 	UINT8 *tmpptr;
 	UINT8 *item_buf;
 	UINT32 *wrbuf;
-	DD_HANDLE flash_handle;
+	//DD_HANDLE flash_handle;
     INFO_ITEM_ST head;
 	INFO_ITEM_ST_PTR item_head_ptr;
 #if CFG_SUPPORT_ALIOS
