@@ -500,6 +500,8 @@ void sys_arch_msleep(int ms)
 
 void sys_arch_check_core_locked(void)
 {
+		register uint32_t calleraddr = 0; \
+		__asm volatile ("MOV %0, LR\n" : "=r" (calleraddr) ); 
     extern sys_mutex_t lock_tcpip_core;
     TaskHandle_t current_thread =  xTaskGetCurrentTaskHandle();
    
@@ -509,6 +511,7 @@ void sys_arch_check_core_locked(void)
         //LWIP_ASSERT("Function called without core lock", 
         if (current_thread != lwip_core_lock_holder_thread)
         {
+	        bk_printf("WARN: fn called from non-LWIP core thread 0x%X\n\r", calleraddr);
         }
     }
 #else /* LWIP_TCPIP_CORE_LOCKING */    
@@ -523,10 +526,16 @@ void sys_arch_check_core_locked(void)
     /* If the mutex hasn't been initialized yet, then give it a pass. */
     if (NULL == lock_tcpip_core)
         return;
-    /* Check that the mutex is currently taken (locked). */
-    if (uxSemaphoreGetCount(lock_tcpip_core) != 0)
+    /* Check that the mutex is currently taken (locked). 
+			* If the semaphore is a counting semaphore then uxSemaphoreGetCount() returns
+			* its current count value.  If the semaphore is a binary semaphore then
+			* uxSemaphoreGetCount() returns 1 if the semaphore is available, and 0 if the
+			* semaphore is not available.
+			*/
+		int count = uxSemaphoreGetCount(lock_tcpip_core);
+    if (count != 0)
     {
-        os_printf("WARN: TCPIP mutex is locked\n\r");
+        bk_printf("WARN: TCPIP mutex is NOT locked (%d) caller %X\n\r", count, calleraddr);
     }
 }
 

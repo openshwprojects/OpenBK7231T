@@ -302,12 +302,12 @@ mqtt_output_send(struct mqtt_ringbuf_t *rb, struct altcp_pcb *tpcb)
     LWIP_DEBUGF(MQTT_DEBUG_TRACE, ("mqtt_output_send: tcp_sndbuf: %d bytes, ringbuf_linear_available: %d, get %d, put %d len %d\n",
                                    send_len, ringbuf_lin_len, rb->get, rb->put, ringbuf_len));
 
-    {
+/*    {
       char tmp[128];
       sprintf(tmp,"mqtt_output_send: tcp_sndbuf: %d bytes, ringbuf_linear_available: %d, get %d, put %d len %d\n\r",
               send_len, ringbuf_lin_len, ((rb)->get), ((rb)->put), ringbuf_len);
       LWIP_DEBUGF(MQTT_DEBUG_CUSTOM, (tmp) );
-    } 
+    }*/ 
 
     if (send_len > ringbuf_lin_len) 
     {
@@ -739,11 +739,11 @@ pub_ack_rec_rel_response(mqtt_client_t *client, u8_t msg, u16_t pkt_id, u8_t qos
   err_t err = ERR_OK;
   if (mqtt_output_check_space(&client->output, 2)) 
   {
-    {
+/*    {
       char tmp[128];
       sprintf(tmp,"mqtt_pub_ack_rel_response: msg: %d pkt_id: %d qos: %d\n\r", msg, pkt_id, qos);
       LWIP_DEBUGF(MQTT_DEBUG_CUSTOM, (tmp) );
-    }
+    }*/
     if (xSemaphoreTake(client->output.g_mutex, portMAX_DELAY) == pdTRUE)
     { 
       mqtt_output_append_fixed_header(&client->output, msg, 0, qos, 0, 2);
@@ -1285,7 +1285,7 @@ mqtt_publish(mqtt_client_t *client, const char *topic, const void *payload, u16_
   } 
   
   mqtt_append_request(&client->pend_req_queue, r);
-  //mqtt_output_send(&client->output, client->conn);
+  mqtt_output_send(&client->output, client->conn);
   return ERR_OK;
 }
 
@@ -1357,7 +1357,7 @@ mqtt_sub_unsub(mqtt_client_t *client, const char *topic, u8_t qos, mqtt_request_
   } 
 
   mqtt_append_request(&client->pend_req_queue, r);
-  //mqtt_output_send(&client->output, client->conn);
+  mqtt_output_send(&client->output, client->conn);
   return ERR_OK;
 }
 
