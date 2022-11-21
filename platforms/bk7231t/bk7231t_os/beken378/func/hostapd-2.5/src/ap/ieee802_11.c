@@ -884,8 +884,9 @@ static void handle_auth(struct hostapd_data *hapd,
 	int res;
 	u16 fc;
 	const u8 *challenge = NULL;
-	u32 session_timeout, acct_interim_interval;
-	int vlan_id = 0;
+	u32 session_timeout;
+    //u32 acct_interim_interval;
+	//int vlan_id = 0;
 	struct hostapd_sta_wpa_psk_short *psk = NULL;
 	u8 resp_ies[2 + WLAN_AUTH_CHALLENGE_LEN];
 	size_t resp_ies_len = 0;

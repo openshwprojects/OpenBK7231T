@@ -1150,7 +1150,9 @@ int hostapd_setup_interface_complete(struct hostapd_iface *iface, int err)
 	wpa_printf(MSG_DEBUG, "Completing interface initialization");
 	if (iface->conf->channel) {
 #ifdef NEED_AP_MLME
+    #ifdef CONFIG_DFS
 		int res;
+    #endif
 #endif /* NEED_AP_MLME */
 
 		iface->freq = hostapd_hw_get_freq(hapd, iface->conf->channel);
@@ -1295,7 +1297,9 @@ int hostapd_setup_interface_complete(struct hostapd_iface *iface, int err)
 	}
 
 #ifdef NEED_AP_MLME
+#ifdef CONFIG_DFS
 dfs_offload:
+#endif
 #endif /* NEED_AP_MLME */
 
 #ifdef CONFIG_FST

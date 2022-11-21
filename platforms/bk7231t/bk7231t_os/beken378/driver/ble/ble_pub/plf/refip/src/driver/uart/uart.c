@@ -179,7 +179,7 @@ enum UART_ERROR_DETECT
 struct uart_txrxchannel
 {
     /// call back function pointer
-    void (*callback) (void*, uint8_t);
+    uint8_t (*callback) (void*, uint8_t);
     /// Dummy data pointer returned to callback when operation is over.
     void* dummy;
 };
@@ -251,7 +251,7 @@ int uart_putchar(char * st)
 
 int uart_printf(const char *fmt,...)
 { 
-	int n;	
+	int n = 0;
 #if UART_PRINTF_EN
 	va_list ap;
 	va_start(ap, fmt);
@@ -462,8 +462,8 @@ void uart_isr(void)
 {		
    uint32_t IntStat;
 	
- #if BLE_TESTER
-	void (*callback) (void*, uint8_t) = NULL;
+#if BLE_TESTER
+	uint8_t (*callback) (void*, uint8_t) = NULL;
     void* data =NULL;
 #endif
 	

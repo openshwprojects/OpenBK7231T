@@ -712,6 +712,12 @@ LIBFLAGS += -L./beken378/lib/ -lrwnx
 LIBFLAGS += -L./beken378/lib/ -lble
 LIBFLAGS += -lstdc++
 
+CFLAGS += -DWRAP_PRINTF=1
+LFLAGS += -Wl,-wrap,vsnprintf
+LFLAGS += -Wl,-wrap,snprintf
+LFLAGS += -Wl,-wrap,sprintf
+LFLAGS += -Wl,-wrap,vsprintf
+
 # Compile
 # -------------------------------------------------------------------
 # add tuya iot lib compile support
@@ -798,18 +804,21 @@ prerequirement:
 	@mkdir -p $(TY_OUTPUT)
 
 $(SRC_O): %.o : %.c
+	@ echo "build $@"
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -MM -MT $@ -MF $(OBJ_DIR)/$(notdir $(patsubst %.o,%.d,$@))
 	@cp $@ $(OBJ_DIR)/$(notdir $@)
 	@chmod 777 $(OBJ_DIR)/$(notdir $@)
 
 $(SRC_S_O): %.o : %.S
+	@ echo "build $@"
 	@$(CC) $(ASMFLAGS) $(INCLUDES) -c $< -o $@
 	@$(CC) $(ASMFLAGS) $(INCLUDES) -c $< -MM -MT $@ -MF $(OBJ_DIR)/$(notdir $(patsubst %.o,%.d,$@))
 	@cp $@ $(OBJ_DIR)/$(notdir $@)
 	@chmod 777 $(OBJ_DIR)/$(notdir $@)
 
 $(SRC_OS_O): %.o : %.c
+	@ echo "build $@"
 	@$(CC) $(OSFLAGS) $(INCLUDES) -c $< -o $@
 	@$(CC) $(OSFLAGS) $(INCLUDES) -c $< -MM -MT $@ -MF $(OBJ_DIR)/$(notdir $(patsubst %.o,%.d,$@))
 	@cp $@ $(OBJ_DIR)/$(notdir $@)

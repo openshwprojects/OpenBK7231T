@@ -27,6 +27,9 @@
 #include "fusb_pub.h"
 #endif
 #include "start_type_pub.h"
+#include "BkDriverFlash.h"
+
+RESET_SOURCE_STATUS bk_misc_get_start_type();
 
 UINT32 func_init_extended(void)
 {

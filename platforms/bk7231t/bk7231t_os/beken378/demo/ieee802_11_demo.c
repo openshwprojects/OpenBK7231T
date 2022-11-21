@@ -171,7 +171,7 @@ void demo_sta_adv_app_init(char *oob_ssid,char *connect_key)
 	os_memset( &wNetConfigAdv, 0x0, sizeof(network_InitTypeDef_adv_st) );
 	
 	os_strcpy((char*)wNetConfigAdv.ap_info.ssid, oob_ssid);
-	hwaddr_aton("48:ee:0c:48:93:12", wNetConfigAdv.ap_info.bssid);
+	hwaddr_aton("48:ee:0c:48:93:12", (u8*)wNetConfigAdv.ap_info.bssid);
 	wNetConfigAdv.ap_info.security = SECURITY_TYPE_WPA2_MIXED;
 	wNetConfigAdv.ap_info.channel = 11;
 	
@@ -194,7 +194,7 @@ void demo_wlan_app_init(VIF_ADDCFG_PTR cfg)
         	os_memset( &networkadv_cfg, 0x0, sizeof(network_InitTypeDef_adv_st) );
         	
         	os_strcpy((char*)networkadv_cfg.ap_info.ssid, cfg->ssid);
-        	hwaddr_aton("48:ee:0c:48:93:12", networkadv_cfg.ap_info.bssid);
+        	hwaddr_aton("48:ee:0c:48:93:12", (u8*)networkadv_cfg.ap_info.bssid);
         	networkadv_cfg.ap_info.security = SECURITY_TYPE_WPA2_MIXED;
         	networkadv_cfg.ap_info.channel = 11;
         	

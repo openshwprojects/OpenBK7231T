@@ -33,6 +33,7 @@ struct scanu_rst_upload *s_scan_result_upload_ptr;
 
 extern enum hostapd_hw_mode ieee80211_freq_to_chan(int freq, u8 *channel);
 extern FUNC_1PARAM_PTR bk_wlan_get_status_cb(void);
+extern uint32_t wifi_get_rescan_cnt(void);
 
 struct mm_bcn_change_req *hadp_intf_get_bcn_change_req(uint8_t vif_id, struct beacon_data *bcn_info)
 {
@@ -693,7 +694,7 @@ int wpa_get_bss_info(struct prism2_hostapd_param *param, int len)
         return -1;
 
     os_memcpy(param->u.bss_info.bssid, cfm->bssid, ETH_ALEN);
-    ssid_len = MIN(SSID_MAX_LEN, os_strlen(cfm->ssid));
+    ssid_len = MIN(SSID_MAX_LEN, ((int)os_strlen((char*)cfm->ssid)));
     os_memcpy(param->u.bss_info.ssid, cfm->ssid, ssid_len);
     os_free(cfm);
 

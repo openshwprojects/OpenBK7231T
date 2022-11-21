@@ -74,8 +74,8 @@ void ieee802_1x_receive(struct hostapd_data *hapd, const u8 *sa, const u8 *buf,
 	struct ieee802_1x_hdr *hdr;
 	struct ieee802_1x_eapol_key *key;
 	u16 datalen;
-	struct rsn_pmksa_cache_entry *pmksa;
-	int key_mgmt;
+	//struct rsn_pmksa_cache_entry *pmksa;
+	//int key_mgmt;
 
 	if (!hapd->conf->ieee802_1x && !hapd->conf->wpa && !hapd->conf->osen &&
 	    !hapd->conf->wps_state)

@@ -4,6 +4,9 @@
 *  Date: 20180502
 ***********************************************************/
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "tuya_os_adapter.h"
 #include "tuya_gpio.h"
 #include "uni_log.h"
@@ -24,7 +27,7 @@ typedef struct
 
 STATIC GPIO_TEST_TABLE gpio_test_table = {
     .group_num = 0,
-    .group = {0}
+    .group = { { .ionum = 0 } }
 };
 
 BOOL_T gpio_test_spcl_cb(UINT_T idx)

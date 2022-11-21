@@ -3202,7 +3202,8 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
 		configUSE_TICKLESS_IDLE to be set to a value other than 1. */
 		#if ( configUSE_TICKLESS_IDLE != 0 )
 		{
-		TickType_t xExpectedIdleTime;
+		    TickType_t xExpectedIdleTime;
+            extern void vApplicationSleepHook(TickType_t sleep_ticks);
 
 			/* It is not desirable to suspend then resume the scheduler on
 			each iteration of the idle task.  Therefore, a preliminary
@@ -3226,6 +3227,7 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
 						traceLOW_POWER_IDLE_BEGIN();
 						portSUPPRESS_TICKS_AND_SLEEP( xExpectedIdleTime );
 						traceLOW_POWER_IDLE_END();
+                        vApplicationSleepHook( xExpectedIdleTime );
 					}
 					else
 					{

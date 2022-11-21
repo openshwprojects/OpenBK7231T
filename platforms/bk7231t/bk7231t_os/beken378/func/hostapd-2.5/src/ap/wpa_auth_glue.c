@@ -176,29 +176,37 @@ static void hostapd_wpa_auth_set_eapol(void *ctx, const u8 *addr,
 	case WPA_EAPOL_authorized:
 		ieee802_1x_set_sta_authorized(hapd, sta, value);
 		break;
-#ifdef CONFIG_FULL_HOSTAPD
 	case WPA_EAPOL_portControl_Auto:
+#ifdef CONFIG_FULL_HOSTAPD        
 		if (sta->eapol_sm)
 			sta->eapol_sm->portControl = Auto;
-		break;
+#endif
+        break;
 	case WPA_EAPOL_keyRun:
+#ifdef CONFIG_FULL_HOSTAPD        
 		if (sta->eapol_sm)
 			sta->eapol_sm->keyRun = value ? TRUE : FALSE;
+#endif        
 		break;
 	case WPA_EAPOL_keyAvailable:
+#ifdef CONFIG_FULL_HOSTAPD        
 		if (sta->eapol_sm)
 			sta->eapol_sm->eap_if->eapKeyAvailable =
 				value ? TRUE : FALSE;
+#endif        
 		break;
 	case WPA_EAPOL_keyDone:
+#ifdef CONFIG_FULL_HOSTAPD        
 		if (sta->eapol_sm)
 			sta->eapol_sm->keyDone = value ? TRUE : FALSE;
+#endif        
 		break;
 	case WPA_EAPOL_inc_EapolFramesTx:
+#ifdef CONFIG_FULL_HOSTAPD        
 		if (sta->eapol_sm)
 			sta->eapol_sm->dot1xAuthEapolFramesTx++;
-		break;
 #endif
+		break;
 	}
 }
 
@@ -217,9 +225,10 @@ static int hostapd_wpa_auth_get_eapol(void *ctx, const u8 *addr,
 	case WPA_EAPOL_keyAvailable:
 		return sta->eapol_sm->eap_if->eapKeyAvailable;
 	default:
-		return -1;
+		break;
 	}
 #endif
+    return -1;
 }
 
 

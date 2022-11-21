@@ -14,8 +14,12 @@
 #include "tuya_hal_bt.h"
 #include "tuya_hal_wifi.h"
 #include "uni_log.h"
+#include "app_sdp.h"
 
 #define BLE_OPEN         1
+
+void appm_update_adv_data( uint8_t* adv_buff, uint8_t adv_len, uint8_t* scan_buff, uint8_t scan_len);
+OPERATE_RET tuya_bt_start_adv();
 
 uint16_t ntf_enable;
 #if 1//qdefined(TY_BT_MOD) && TY_BT_MOD == 1
@@ -65,7 +69,7 @@ uint8_t ble_read_callback(read_req_t *read_req)
 {
     if(read_req->att_idx == 5)
     {
-        read_req->value = ntf_enable;
+        *(read_req->value) = (uint8_t)ntf_enable;
     }
     return 2;
 }

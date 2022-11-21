@@ -33,20 +33,96 @@ extern void do_swi( void );
 #else
 #include "power_save_pub.h"
 #endif
+#include "start_type_pub.h"
 
 ISR_T _isrs[INTC_MAX_COUNT] = {{{0, 0}},};
 static UINT32 isrs_mask = 0;
 static ISR_LIST_T isr_hdr = {{&isr_hdr.isr, &isr_hdr.isr},};
 IRDA_CHECK_FUNC func_irda_check = NULL;
+volatile UINT32 irq_ticks = 0;
+volatile UINT32 fiq_ticks = 0;
+
+UINT32 intc_get_irq_tick_count()
+{
+    return irq_ticks;
+}
+
+UINT32 intc_get_fiq_tick_count()
+{
+    return fiq_ticks;
+}
+
+int intc_get_handler_count()
+{
+    int cnt = 0;
+    LIST_HEADER_T *pos, *n;
+    if (list_empty(&isr_hdr.isr))
+    {
+        return 0;
+    }
+
+    list_for_each_safe(pos, n, &isr_hdr.isr)
+    {
+        cnt++;
+    }
+    return cnt;
+}
+
+UINT32 intc_get_isr_call_count(int isr_index)
+{
+    UINT32 isr_cnt = 0;
+    int cnt = 0;
+    LIST_HEADER_T *pos, *n;
+    ISR_T *f;
+
+    if (list_empty(&isr_hdr.isr))
+    {
+        return 0;
+    }
+
+    list_for_each_safe(pos, n, &isr_hdr.isr)
+    {
+        if (cnt == isr_index)
+        {
+            f = list_entry(pos, ISR_T, list);
+            isr_cnt = f->isr_cnt;
+        }
+        cnt++;
+    }
+    return isr_cnt;
+}
+
+int intc_get_isr_num(int isr_index)
+{
+    int cnt = 0;
+    LIST_HEADER_T *pos, *n;
+    ISR_T *f;
+
+    if (list_empty(&isr_hdr.isr))
+    {
+        return -1;
+    }
+
+    list_for_each_safe(pos, n, &isr_hdr.isr)
+    {
+        if (cnt == isr_index)
+        {
+            f = list_entry(pos, ISR_T, list);
+            return f->int_num;
+        }
+        cnt++;
+    }
+    return -1;
+}
 
 void intc_register_irda_check_func(IRDA_CHECK_FUNC func)
 {
-	func_irda_check = func;
+    func_irda_check = func;
 }
 
 void intc_unregister_irda_check_func()
 {
-	func_irda_check = NULL;
+    func_irda_check = NULL;
 }
 
 void intc_hdl_entry(UINT32 int_status)
@@ -72,6 +148,7 @@ void intc_hdl_entry(UINT32 int_status)
         if ((BIT(i) & status))
         {
             f->isr_func();
+            f->isr_cnt++;
             status &= ~(BIT(i));
         }
 
@@ -95,6 +172,7 @@ void intc_service_register(UINT8 int_num, UINT8 int_pri, FUNCPTR isr)
     cur_ptr->isr_func = isr;
     cur_ptr->int_num  = int_num;
     cur_ptr->pri      = int_pri;
+    cur_ptr->isr_cnt  = 0;
 
     INTC_PRT("reg_isr:%d:%d:%p\r\n", int_num, int_pri, isr);
 
@@ -230,16 +308,18 @@ void rf_ps_wakeup_isr_idle_int_cb()
 void intc_irq(void)
 {
     UINT32 irq_status;
-	
+
+    irq_ticks++;
+    
     irq_status = sddev_control(ICU_DEV_NAME, CMD_GET_INTR_STATUS, 0);
     irq_status = irq_status & 0xFFFF;
-	if(0 == irq_status)
-	{
-	    #if (! CFG_USE_STA_PS)
-		os_printf("irq:dead\r\n");
+    if(0 == irq_status)
+    {
+        #if (! CFG_USE_STA_PS)
+        os_printf("irq:dead\r\n");
         #endif
-	}
-	
+    }
+    
     sddev_control(ICU_DEV_NAME, CMD_CLR_INTR_STATUS, &irq_status);
 
     intc_hdl_entry(irq_status);
@@ -249,7 +329,8 @@ void intc_fiq(void)
 {
     UINT32 fiq_status;
 
-	/* bk_ir_check_timer*/
+    fiq_ticks++;
+    /* bk_ir_check_timer*/
     if (func_irda_check && ((*func_irda_check)() == 0))
     {
         return;
@@ -274,10 +355,13 @@ void intc_init(void)
     UINT32 param;
 
 #if CFG_SUPPORT_ALIOS
-    *((volatile uint32_t *)0x400000) = &do_irq;
-    *((volatile uint32_t *)0x400004) = &do_fiq;
-    *((volatile uint32_t *)0x400008) = &do_swi;
-    *((volatile uint32_t *)0x40000C) = 1;
+    *((volatile uint32_t *)0x400000) = (uint32_t)&do_irq;
+    *((volatile uint32_t *)0x400004) = (uint32_t)&do_fiq;
+    *((volatile uint32_t *)0x400008) = (uint32_t)&do_swi;
+    *((volatile uint32_t *)0x40000c) = (uint32_t)&do_undefined;
+    *((volatile uint32_t *)0x400010) = (uint32_t)&do_pabort;
+    *((volatile uint32_t *)0x400014) = (uint32_t)&do_dabort;
+    *((volatile uint32_t *)0x400018) = (uint32_t)&do_reserved;
 #endif
     intc_enable(FIQ_MAC_GENERAL);
     intc_enable(FIQ_MAC_PROT_TRIGGER);
@@ -287,8 +371,8 @@ void intc_init(void)
 
     intc_enable(FIQ_MAC_TX_RX_MISC);
     intc_enable(FIQ_MAC_TX_RX_TIMER);
-	
-    intc_enable(FIQ_MODEM);	
+    
+    intc_enable(FIQ_MODEM); 
 
     param = GINTR_FIQ_BIT | GINTR_IRQ_BIT;
     sddev_control(ICU_DEV_NAME, CMD_ICU_GLOBAL_INT_ENABLE, &param);
@@ -299,16 +383,143 @@ void intc_init(void)
 void intc_deinit(void)
 {
     UINT32 param;
-	
+    
     for( int i = 0; i<=FIQ_DPLL_UNLOCK; i++)
-	{
+    {
         intc_disable(i);
-	}
-	
+    }
+    
     param = GINTR_FIQ_BIT | GINTR_IRQ_BIT;
     sddev_control(ICU_DEV_NAME, CMD_ICU_GLOBAL_INT_DISABLE, &param);
 
     return;
 }
+
+void bk_cpu_shutdown(void)
+{
+    GLOBAL_INT_DECLARATION();
+
+    os_printf("shutdown...\n");
+
+    GLOBAL_INT_DISABLE();
+    while(1);
+    GLOBAL_INT_RESTORE();
+}
+
+void bk_show_register (struct arm_registers *regs)
+{
+    os_printf("Current regs:\n");
+    os_printf("r00:0x%08x r01:0x%08x r02:0x%08x r03:0x%08x\n",
+               regs->r0, regs->r1, regs->r2, regs->r3);
+    os_printf("r04:0x%08x r05:0x%08x r06:0x%08x r07:0x%08x\n",
+               regs->r4, regs->r5, regs->r6, regs->r7);
+    os_printf("r08:0x%08x r09:0x%08x r10:0x%08x\n",
+               regs->r8, regs->r9, regs->r10);
+    os_printf("fp :0x%08x ip :0x%08x\n",
+               regs->fp, regs->ip);
+    os_printf("sp :0x%08x lr :0x%08x pc :0x%08x\n",
+               regs->sp, regs->lr, regs->pc);
+    os_printf("SPSR:0x%08x\n", regs->spsr);
+    os_printf("CPSR:0x%08x\n", regs->cpsr);
+
+    int i;
+    const unsigned int *reg1;
+
+    os_printf("\nseparate regs:\n");
+
+    reg1 = (const unsigned int *)0x400024;
+    os_printf("SYS:cpsr r8-r14\n");
+    for(i=0;i<0x20>>2;i++)
+    {
+        os_printf("0x%08x\n",*(reg1 + i));
+    }
+
+    os_printf("IRQ:cpsr spsr r8-r14\n");
+    reg1 = (const unsigned int *)0x400044;
+    for(i=0;i<0x24>>2;i++)
+    {
+        os_printf("0x%08x\n",*(reg1 + i));
+    }
+
+    os_printf("FIR:cpsr spsr r8-r14\n");
+    reg1 = (const unsigned int *)0x400068;
+    for(i=0;i<0x24>>2;i++)
+    {
+        os_printf("0x%08x\n",*(reg1 + i));
+    }
+
+    os_printf("ABT:cpsr spsr r8-r14\n");
+    reg1 = (const unsigned int *)0x40008c;
+    for(i=0;i<0x24>>2;i++)
+    {
+        os_printf("0x%08x\n",*(reg1 + i));
+    }
+
+    os_printf("UND:cpsr spsr r8-r14\n");
+    reg1 = (const unsigned int *)0x4000b0;
+    for(i=0;i<0x24>>2;i++)
+    {
+        os_printf("0x%08x\n",*(reg1 + i));
+    }
+
+    os_printf("SVC:cpsr spsr r8-r14\n");
+    reg1 = (const unsigned int *)0x4000d4;
+    for(i=0;i<0x24>>2;i++)
+    {
+        os_printf("0x%08x\n",*(reg1 + i));
+    }
+
+    os_printf("\r\n");
+
+}
+
+void bk_trap_udef(struct arm_registers *regs)
+{
+#if (CFG_SOC_NAME == SOC_BK7231N)
+    *((volatile uint32_t *)START_TYPE_ADDR) = (uint32_t)(CRASH_UNDEFINED_VALUE & 0xffff);
+#else
+    *((volatile uint32_t *)START_TYPE_ADDR) = (uint32_t)CRASH_UNDEFINED_VALUE;
+#endif
+    os_printf("undefined instruction\n");
+    bk_show_register(regs);
+    bk_cpu_shutdown();
+}
+
+void bk_trap_pabt(struct arm_registers *regs)
+{
+#if (CFG_SOC_NAME == SOC_BK7231N)
+    *((volatile uint32_t *)START_TYPE_ADDR) = (uint32_t)(CRASH_PREFETCH_ABORT_VALUE & 0xffff);
+#else
+    *((volatile uint32_t *)START_TYPE_ADDR) = (uint32_t)CRASH_PREFETCH_ABORT_VALUE;
+#endif
+    os_printf("prefetch abort\n");
+    bk_show_register(regs);
+    bk_cpu_shutdown();
+}
+
+void bk_trap_dabt(struct arm_registers *regs)
+{
+#if (CFG_SOC_NAME == SOC_BK7231N)
+    *((volatile uint32_t *)START_TYPE_ADDR) = (uint32_t)(CRASH_DATA_ABORT_VALUE & 0xffff);
+#else
+    *((volatile uint32_t *)START_TYPE_ADDR) = (uint32_t)CRASH_DATA_ABORT_VALUE;
+#endif
+    os_printf("data abort\n");
+    bk_show_register(regs);
+    bk_cpu_shutdown();
+}
+
+void bk_trap_resv(struct arm_registers *regs)
+{
+#if (CFG_SOC_NAME == SOC_BK7231N)
+    *((volatile uint32_t *)START_TYPE_ADDR) = (uint32_t)(CRASH_UNUSED_VALUE & 0xffff);
+#else
+    *((volatile uint32_t *)START_TYPE_ADDR) = (uint32_t)CRASH_UNUSED_VALUE;
+#endif
+    os_printf("not used\n");
+    bk_show_register(regs);
+    bk_cpu_shutdown();
+}
+
 
 /// @}

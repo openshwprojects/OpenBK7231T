@@ -9,6 +9,7 @@
 #include "include.h"
 #include "hostapd_intf_pub.h"
 #include "uart_pub.h"
+#include "str_pub.h"
 
 #include "includes.h"
 #include "common.h"
@@ -1305,8 +1306,8 @@ static void hostap_poll_client_null_frame(void *priv, const u8 *own_addr,
     struct prism2_hostapd_param param;
 	
 	param.cmd = PRISM2_HOSTAPD_POLL_CLIENT_NULL_DATA;
-	param.u.poll_null_data.own_addr = own_addr;
-	param.u.poll_null_data.sta_addr = addr;
+	param.u.poll_null_data.own_addr = (u8 *)own_addr;
+	param.u.poll_null_data.sta_addr = (u8 *)addr;
 		
 	ret = hostapd_ioctl(drv, &param, sizeof(param));
 
@@ -1691,7 +1692,7 @@ int wpa_driver_get_ssid(void *priv, u8 *ssid)
         return -1;
     }
 
-	len = MIN(SSID_MAX_LEN, os_strlen(param->u.bss_info.ssid));
+	len = MIN(SSID_MAX_LEN, ((int)os_strlen((char*)param->u.bss_info.ssid)));
     os_memcpy(ssid, param->u.bss_info.ssid, len);
     os_free(buf);
 

@@ -90,6 +90,10 @@ void power_save_td_timer_stop(void);
 extern void sctrl_sta_rf_sleep(void);
 extern void sctrl_sta_rf_wakeup(void);
 
+#if defined(PLATFORM_BEKEN)
+void bk_misc_update_set_type(RESET_SOURCE_STATUS type);
+#endif
+
 int net_if_is_up(void)
 {
     return  (mhdr_get_station_status() == RW_EVT_STA_GOT_IP);

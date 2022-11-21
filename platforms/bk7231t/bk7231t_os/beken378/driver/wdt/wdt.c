@@ -8,6 +8,8 @@
 #include "drv_model_pub.h"
 #include "start_type_pub.h"
 
+extern void bk_misc_update_set_type(RESET_SOURCE_STATUS type);
+
 static SDD_OPERATIONS wdt_op = {
             wdt_ctrl
 };

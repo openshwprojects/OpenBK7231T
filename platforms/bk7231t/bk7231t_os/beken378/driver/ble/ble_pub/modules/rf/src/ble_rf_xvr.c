@@ -158,14 +158,14 @@ static uint32_t rf_rpl_reg_rd (uint16_t addr)
 {
   uint32_t ret;
 	
-	ret = REG_PL_RD(addr);
+	ret = REG_PL_RD(((unsigned int)addr));
 	
 	return ret;
 }
 
 static void rf_rpl_reg_wr (uint16_t addr, uint32_t value)
 {
-		REG_PL_WR(addr, value);
+		REG_PL_WR(((unsigned int)addr), value);
 }
 /**
  ****************************************************************************************

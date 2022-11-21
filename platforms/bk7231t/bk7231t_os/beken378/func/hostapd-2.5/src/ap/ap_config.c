@@ -251,7 +251,7 @@ void hostapd_config_clear_wpa_psk(struct hostapd_wpa_psk **l)
 
 void hostapd_config_free_bss(struct hostapd_bss_config *conf)
 {
-	struct hostapd_eap_user *user, *prev_user;
+	//struct hostapd_eap_user *user, *prev_user;
 
 	if (conf == NULL)
 		return;

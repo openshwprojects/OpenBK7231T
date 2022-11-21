@@ -4440,7 +4440,7 @@ struct wpa_global * wpa_supplicant_init(struct wpa_params *params)
  */
 int wpa_supplicant_run(struct wpa_global *global)
 {
-	struct wpa_supplicant *wpa_s;
+	//struct wpa_supplicant *wpa_s;
 
 	//eloop_register_signal_terminate(wpa_supplicant_terminate, global);
 	//eloop_register_signal_reconfig(wpa_supplicant_reconfig, global);

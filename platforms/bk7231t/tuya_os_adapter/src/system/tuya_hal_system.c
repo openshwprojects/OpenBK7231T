@@ -41,6 +41,8 @@
 
 #define SERIAL_NUM_LEN 32
 
+RESET_SOURCE_STATUS bk_misc_get_start_type();
+void bk_reboot(void);
 
 /***********************************************************
 *************************variable define********************

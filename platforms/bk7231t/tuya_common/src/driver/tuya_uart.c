@@ -36,6 +36,10 @@ STATIC TUYA_UART_S ty_uart[TY_UART_NUM];
 *************************function define********************
 ***********************************************************/
 void ty_read_uart_data_to_buffer(int port, void* param);
+void set_printf_port(UINT8 port);
+#ifdef PLATFORM_BEKEN
+void bk_send_byte(UINT8 uport, UINT8 data);
+#endif
 
 /***********************************************************
 *  Function: ty_uart_init
@@ -86,6 +90,7 @@ OPERATE_RET ty_uart_init(IN CONST TY_UART_PORT_E port,IN CONST TY_UART_BAUD_E ba
 
     bk_uart_initialize(port, &config, NULL);
     bk_uart_set_rx_callback(port, ty_read_uart_data_to_buffer, NULL);
+    return OPRT_OK;
 }
 
 /***********************************************************

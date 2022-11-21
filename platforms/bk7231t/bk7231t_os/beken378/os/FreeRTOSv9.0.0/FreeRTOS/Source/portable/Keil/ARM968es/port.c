@@ -147,6 +147,21 @@ void vApplicationIdleHook( void )
 	}
 }
 
+FUNCTICKPTR func_idle_check = NULL;
+
+void vApplicationSleepHook(TickType_t sleep_ticks)
+{
+    if (func_idle_check != NULL)
+    {
+        (*func_idle_check)((uint32_t)sleep_ticks);
+    }
+}
+
+void bg_register_idle_check_func(FUNCTICKPTR func)
+{
+    func_idle_check = func;
+}
+
 /*-----------------------------------------------------------*/
 /*
  * Initialize the stack of a task to look exactly as if a call to

@@ -17,9 +17,9 @@
 #define dhcp_d(...)				\
 	bk_printf("dhcp: %s\r\n", ##__VA_ARGS__)
 #else
-#define dhcp_d 
-#define dhcp_e 
-#define dhcp_w 
+#define dhcp_d(...) 
+#define dhcp_e(...)
+#define dhcp_w(...)
 #endif
 
 #define SERVER_BUFFER_SIZE		1024

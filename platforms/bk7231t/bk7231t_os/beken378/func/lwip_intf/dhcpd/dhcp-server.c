@@ -881,7 +881,7 @@ uint8_t* dhcp_lookup_mac(uint8_t *chaddr)
 
             ip.s_addr = dhcps.ip_mac_mapping[i].client_ip;
  
-			return inet_ntoa(ip);
+			return (uint8_t *)inet_ntoa(ip);
 		}
 	}
 	return 0;

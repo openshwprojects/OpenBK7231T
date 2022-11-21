@@ -21,6 +21,17 @@
 	.globl irq_handler
 	.globl fiq_handler
 	.globl vPortStartFirstTask
+    .globl do_irq
+    .globl do_fiq
+    .globl do_swi
+    .globl do_undefined
+    .globl do_pabort
+    .globl do_dabort
+    .globl do_reserved
+    .globl bk_trap_udef
+    .globl bk_trap_pabt
+    .globl bk_trap_dabt
+    .globl bk_trap_resv
 
 #include "sys_config.h"
 
@@ -55,6 +66,75 @@
 /* ========================================================================
  Context save and restore macro definitions
  * ======================================================================== */
+
+
+    .macro PUSH_ALL_ARM_REG
+        BOOT_CHANGE_MODE  BOOT_MODE_SYS BOOT_MODE_MASK
+        LDR R1, =0x400044           // get backup top.
+        STMFD   R1!, {R8-R14}       // backup R8-R14
+        MRS   R0, CPSR
+        STMFD   R1!, {R0}           // backup CPSR
+
+        BOOT_CHANGE_MODE  BOOT_MODE_IRQ BOOT_MODE_MASK
+        LDR R1, =0x400068           // get backup top.
+        STMFD   R1!, {R8-R14}       // backup R8-R14
+        MRS   R0, SPSR
+        STMFD   R1!, {R0}           // backup SPSR
+        MRS   R0, CPSR
+        STMFD   R1!, {R0}           // backup CPSR
+
+        BOOT_CHANGE_MODE  BOOT_MODE_FIQ BOOT_MODE_MASK
+        LDR R1, =0x40008C           // get backup top.
+        STMFD   R1!, {R8-R14}       // backup R8-R14
+        MRS   R0, SPSR
+        STMFD   R1!, {R0}           // backup SPSR
+        MRS   R0, CPSR
+        STMFD   R1!, {R0}           // backup CPSR
+
+
+        BOOT_CHANGE_MODE  BOOT_MODE_ABT BOOT_MODE_MASK
+        LDR R1, =0x4000B0           // get backup top.
+        STMFD   R1!, {R8-R14}       // backup R8-R14
+        MRS   R0, SPSR
+        STMFD   R1!, {R0}           // backup SPSR
+        MRS   R0, CPSR
+        STMFD   R1!, {R0}           // backup CPSR
+
+
+        BOOT_CHANGE_MODE  BOOT_MODE_UND BOOT_MODE_MASK
+        LDR R1, =0x4000D4           // get backup top.
+        STMFD   R1!, {R8-R14}       // backup R8-R14
+        MRS   R0, SPSR
+        STMFD   R1!, {R0}           // backup SPSR
+        MRS   R0, CPSR
+        STMFD   R1!, {R0}           // backup CPSR
+
+
+        BOOT_CHANGE_MODE  BOOT_MODE_SVC BOOT_MODE_MASK
+        LDR R1, =0x4000F8           // get backup top.
+        STMFD   R1!, {R8-R14}       // backup R8-R14
+        MRS   R0, SPSR
+        STMFD   R1!, {R0}           // backup SPSR
+        MRS   R0, CPSR
+        STMFD   R1!, {R0}           // backup CPSR
+
+    .endm
+
+/* ========================================================================
+ * Push SVC reg
+ */
+    .macro PUSH_SVC_REG
+        SUB     SP, SP, #18 * 4
+        STMIA   SP, {R0 - R12}
+        MOV     R0, SP
+        MRS     R6, SPSR
+        STR     LR, [R0, #15*4]
+        STR     R6, [R0, #16*4]
+        STR     SP, [R0, #13*4]
+        STR     LR, [R0, #14*4]
+        MRS     R6, CPSR
+        STR     R6, [R0, #17*4]
+    .endm
 	
 /* ========================================================================*/
 	.macro   portSAVE_CONTEXT 
@@ -397,26 +477,81 @@ _sysboot_zi_init:
     BLO 5b
     BX LR
 
-		.align	5 
-boot_undefined:
-    B boot_undefined
+        .align  5
+do_undefined:
+    LDMFD   SP!, {R0-R1}
+    PUSH_SVC_REG
 
-		.align	5 
+    STMFD  sp!,{r0-r1}
+    PUSH_ALL_ARM_REG
+    BOOT_CHANGE_MODE  BOOT_MODE_UND BOOT_MODE_MASK
+    LDMFD   SP!, {R0-R1}
+
+    B bk_trap_udef
+
+        .align  5
+do_pabort:
+    LDMFD   SP!, {R0-R1}
+    PUSH_SVC_REG
+
+    STMFD  sp!,{r0-r1}
+    PUSH_ALL_ARM_REG
+    BOOT_CHANGE_MODE  BOOT_MODE_ABT BOOT_MODE_MASK
+    LDMFD   SP!, {R0-R1}
+
+    B bk_trap_pabt
+
+        .align  5
+do_dabort:
+    LDMFD   SP!, {R0-R1}
+    PUSH_SVC_REG
+
+    STMFD  sp!,{r0-r1}
+    PUSH_ALL_ARM_REG
+    BOOT_CHANGE_MODE  BOOT_MODE_ABT BOOT_MODE_MASK
+    LDMFD   SP!, {R0-R1}
+
+    B bk_trap_dabt
+
+        .align  5
+do_reserved:
+    LDMFD   SP!, {R0-R1}
+    PUSH_SVC_REG
+    B bk_trap_resv
+
+
+        .align  5
+boot_undefined:
+    STMFD  sp!,{r0-r1}
+    LDR    R1, =0x40000c
+    LDR    r0, [R1]
+    BX     r0
+
+        .align  5
 boot_swi:
     B vPortYieldProcessor
-		
-		.align	5 
+
+        .align  5
 boot_pabort:
-    B boot_pabort
-		
-		.align	5 
+    STMFD  sp!,{r0-r1}
+    LDR    R1, =0x400010
+    LDR    r0, [R1]
+    BX     r0
+
+        .align  5
 boot_dabort:
-    B boot_dabort
-		
-		.align	5 
+    STMFD  sp!,{r0-r1}
+    LDR    R1, =0x400014
+    LDR    r0, [R1]
+    BX     r0
+
+        .align  5
 boot_reserved:
-    B boot_reserved
-    
+    STMFD  sp!,{r0-r1}
+    LDR    R1, =0x400018
+    LDR    r0, [R1]
+    BX     r0
+
 		.align	5 
 irq_handler:	
 	portSAVE_CONTEXT
@@ -462,6 +597,8 @@ vPortYieldProcessor:
 WFI:
 	MOV R0, #0
 	MCR p15, 0, R0, c7, c0, 4
+    MCR p15, 0, R0, c15, c8, 2
+    MCR p15, 0, R0, c7, c10, 4
 	BX LR
 /*EOF*/
 
