@@ -4853,5 +4853,18 @@ BaseType_t xTaskIsTaskFinished( xTaskHandle xTask )
 	
     return pdTRUE;
 }
+
+
+static char *none = "none";
+char *OBK_GetNextTaskName(){
+	TCB_t *pxTCB = ( TCB_t * ) listGET_OWNER_OF_HEAD_ENTRY( pxDelayedTaskList );
+	if (pxTCB){
+		return pxTCB->pcTaskName;
+	} else {
+		return none;
+	}
+}
+
+
 // eof
 

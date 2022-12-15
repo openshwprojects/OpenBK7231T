@@ -97,12 +97,45 @@ void mcu_ps_disable(void )
     GLOBAL_INT_RESTORE();
 }
 
+
+#ifdef OBK_MCU_SLEEP_METRICS_ENABLE
+OBK_MCU_SLEEP_METRICS OBK_Mcu_metrics = {0};
+extern char *OBK_GetNextTaskName();
+#endif
+
 UINT32 mcu_power_save(UINT32 sleep_tick)
 {
     UINT32 sleep_ms, sleep_pwm_t, param, uart_miss_us = 0;
     INT32 miss_ticks = 0;
     UINT32 wkup_type, wastage = 0;
     GLOBAL_INT_DECLARATION();
+
+#ifdef OBK_MCU_SLEEP_METRICS_ENABLE
+	OBK_Mcu_metrics.sleep_requested_ticks += sleep_tick;
+
+    if (mcu_ps_info.mcu_ps_on != 1){
+        OBK_Mcu_metrics.reasons[0]++;
+    }
+
+    int peri_busy = peri_busy_count_get();
+    if (peri_busy){
+        OBK_Mcu_metrics.reasons[1]++;
+    }
+    int mcu_prevent = mcu_prevent_get();
+    if (mcu_prevent){
+        OBK_Mcu_metrics.reasons[2]++;
+    }
+#if CFG_USE_STA_PS
+#if NX_POWERSAVE
+    int txl_sleep = txl_sleep_check();
+    if (txl_sleep){
+        OBK_Mcu_metrics.reasons[3]++;
+    }
+#endif
+#endif
+#endif //OBK_MCU_SLEEP_METRICS_ENABLE
+
+
     GLOBAL_INT_DISABLE();
 
     if(mcu_ps_info.mcu_ps_on == 1
@@ -110,7 +143,7 @@ UINT32 mcu_power_save(UINT32 sleep_tick)
             && (mcu_prevent_get() == 0)
 #if CFG_USE_STA_PS
 #if NX_POWERSAVE
-            && (txl_sleep_check())
+            && (txl_sleep)
 #endif
 #endif
       )
@@ -127,6 +160,10 @@ UINT32 mcu_power_save(UINT32 sleep_tick)
             sleep_pwm_t = (sleep_ms * 32);
             if((int32)sleep_pwm_t <= 64)
             {
+                // too short
+#ifdef OBK_MCU_SLEEP_METRICS_ENABLE
+                OBK_Mcu_metrics.reasons[4]++;
+#endif                
                 break;
             }
 #if (CFG_SOC_NAME == SOC_BK7231)
@@ -218,6 +255,26 @@ UINT32 mcu_power_save(UINT32 sleep_tick)
     mcu_ps_cal_increase_tick(& miss_ticks);
     GLOBAL_INT_RESTORE();
     ASSERT(miss_ticks >= 0);
+#ifdef OBK_MCU_SLEEP_METRICS_ENABLE
+    OBK_Mcu_metrics.slept_ticks += miss_ticks;
+    if (OBK_Mcu_metrics.longest_sleep_1s < miss_ticks){
+        OBK_Mcu_metrics.longest_sleep_1s = miss_ticks;
+    }
+    if (OBK_Mcu_metrics.longest_sleep < miss_ticks){
+        OBK_Mcu_metrics.longest_sleep = miss_ticks;
+    }
+    if (OBK_Mcu_metrics.longest_sleep_req_1s < sleep_tick){
+        OBK_Mcu_metrics.longest_sleep_req_1s = sleep_tick;
+    }
+    if (OBK_Mcu_metrics.longest_sleep_req < sleep_tick){
+        OBK_Mcu_metrics.longest_sleep_req = sleep_tick;
+    }
+
+    if (miss_ticks){
+        OBK_Mcu_metrics.nexttask = OBK_GetNextTaskName();
+    }
+    OBK_Mcu_metrics.task = OBK_GetNextTaskName();
+#endif
     return miss_ticks;
 }
 
