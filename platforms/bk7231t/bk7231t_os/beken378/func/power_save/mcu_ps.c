@@ -128,7 +128,7 @@ UINT32 mcu_power_save(UINT32 sleep_tick)
 #if CFG_USE_STA_PS
 #if NX_POWERSAVE
     int txl_sleep = txl_sleep_check();
-    if (txl_sleep){
+    if (!txl_sleep){
         OBK_Mcu_metrics.reasons[3]++;
     }
 #endif
