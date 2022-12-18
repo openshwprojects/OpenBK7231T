@@ -4,6 +4,10 @@
 #include "power_save_pub.h"
 #include "sys_ctrl_pub.h"
 #include "target_util_pub.h"
+#include "sys_ctrl.h"
+#include "ps_debug_pub.h"
+#include "icu_pub.h"
+#include "pwm_pub.h"
 
 
 #if PS_SUPPORT_MANUAL_SLEEP
