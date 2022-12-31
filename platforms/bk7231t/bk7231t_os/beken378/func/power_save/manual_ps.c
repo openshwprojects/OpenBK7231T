@@ -8,6 +8,14 @@
 #include "ps_debug_pub.h"
 #include "icu_pub.h"
 #include "pwm_pub.h"
+#include "BkDriverGpio.h"
+#include "phy_trident.h"
+
+
+void bk_wlan_ps_wakeup_with_timer(UINT32 sleep_time);
+void bk_wlan_ps_wakeup_with_peri(UINT8 uart2_wk, UINT32 gpio_index_map);
+void power_save_wakeup_with_peri(UINT8 uart2_wk, UINT32 gpio_index_map);
+void deep_sleep_wakeup_with_timer(UINT32 sleep_time);
 
 
 #if PS_SUPPORT_MANUAL_SLEEP
@@ -29,7 +37,8 @@ void bk_wlan_ps_wakeup_with_peri( UINT8 uart2_wk, UINT32 gpio_index_map)
 
 void power_save_wakeup_with_peri( UINT8 uart2_wk, UINT32 gpio_index_map)
 {
-    UINT32 reg, ret;
+	UINT32 reg;
+	//UINT32 ret;
     UINT32 param = 0;
     UINT32 i;
     UINT32    gpio_stat_cfg[32];
@@ -118,7 +127,12 @@ void power_save_timer1_init()
     ret = sddev_control(PWM_DEV_NAME, CMD_PWM_INIT_PARAM, &param);
     ASSERT(PWM_SUCCESS == ret);
 }
+void power_save_pwm1_enable(UINT32 time) {
 
+}
+void power_save_pwm1_disable() {
+
+}
 void power_save_wakeup_with_timer(UINT32 sleep_time)
 {
     UINT32 reg;
@@ -149,7 +163,7 @@ void power_save_wakeup_with_timer(UINT32 sleep_time)
             wakeup_timer = 32;
 
         delay(5);
-        power_save_pwm1_enable(wakeup_timer);
+		power_save_pwm1_enable(wakeup_timer);
     }
     else
     {
