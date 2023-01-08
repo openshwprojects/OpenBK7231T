@@ -118,7 +118,7 @@ void ethernetif_input(int iface, struct pbuf *p);
 #if MY_OPENBK7231N_USE_MAC_AS_WLAN_NAME
 char g_customWlanName[32];
 // This will give linker errors on any non-App project...
-const char *CFG_GetDeviceName();
+const char *CFG_GetOpenBekenHostName();
 
 #else
 const char wlan_name[][6] = 
@@ -137,7 +137,7 @@ static void low_level_init(struct netif *netif)
     
 #if LWIP_NETIF_HOSTNAME
 #if MY_OPENBK7231N_USE_MAC_AS_WLAN_NAME
-	tmpPtr = CFG_GetDeviceName();
+	tmpPtr = CFG_GetOpenBekenHostName();
 	if(tmpPtr != 0 && tmpPtr[0] != 0) {
 	   netif->hostname = tmpPtr;
 	} else {
