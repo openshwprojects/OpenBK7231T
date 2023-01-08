@@ -139,7 +139,7 @@ typedef struct _network_InitTypeDef_st
 {
     char wifi_mode;               /**< DHCP mode: @ref wlanInterfaceTypedef.*/
     char wifi_ssid[33];           /**< SSID of the wlan needs to be connected.*/
-    char wifi_key[64];            /**< Security key of the wlan needs to be connected, ignored in an open system.*/
+    char wifi_key[65];            /**< Security key of the wlan needs to be connected, ignored in an open system.*/
     char local_ip_addr[16];       /**< Static IP configuration, Local IP address. */
     char net_mask[16];            /**< Static IP configuration, Netmask. */
     char gateway_ip_addr[16];     /**< Static IP configuration, Router IP address. */
