@@ -12,7 +12,7 @@ typedef struct  ps_deep_ctrl{
     UINT32 param;
 }PS_DEEP_CTRL_PARAM;
 
-#define     PS_SUPPORT_MANUAL_SLEEP     0
+#define     PS_SUPPORT_MANUAL_SLEEP     1
 
 typedef void (*ps_wakeup_cb)(void);
 extern void deep_sleep_wakeup_with_gpio(UINT32 gpio_index_map,UINT32 gpio_edge_map);
