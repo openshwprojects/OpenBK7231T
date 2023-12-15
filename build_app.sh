@@ -43,7 +43,7 @@ fi
 cd `dirname $0`
 
 TARGET_PLATFORM=bk7231t
-TARGET_PLATFORM_REPO=https://airtake-public-data-1254153901.cos.ap-shanghai.myqcloud.com/smart/embed/pruduct/bk7231t_1.0.22-beta.1.zip
+TARGET_PLATFORM_REPO=https://airtake-public-data-1254153901.cos.ap-shanghai.myqcloud.com/smart/embed/pruduct/bk7231t_1.0.22.zip
 TARGET_PLATFORM_VERSION=1.0.22-beta.1
 ROOT_DIR=$(pwd)
 
