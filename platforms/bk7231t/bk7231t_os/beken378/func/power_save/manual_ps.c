@@ -41,7 +41,7 @@ void power_save_wakeup_with_peri( UINT8 uart2_wk, UINT32 gpio_index_map)
 	//UINT32 ret;
     UINT32 param = 0;
     UINT32 i;
-    UINT32    gpio_stat_cfg[32];
+    UINT32    gpio_stat_cfg[GPIONUM];
 
     if(power_save_ps_mode_get() != PS_NO_PS_MODE)
     {
