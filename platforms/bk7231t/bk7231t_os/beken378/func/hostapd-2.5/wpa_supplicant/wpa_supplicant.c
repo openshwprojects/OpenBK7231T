@@ -2121,7 +2121,7 @@ static void wpas_start_assoc_cb(struct wpa_radio_work *work, int deinit)
 		ssid->bssid_set = 0;
 	}
 
-#ifdef CONIFG_FULL_SUPPLICANT
+#ifdef CONFIG_FULL_SUPPLICANT
 	/* Initial frequency for IBSS/mesh */
 	if ((ssid->mode == WPAS_MODE_IBSS || ssid->mode == WPAS_MODE_MESH) &&
 	    ssid->frequency > 0 && params.freq.freq == 0)
