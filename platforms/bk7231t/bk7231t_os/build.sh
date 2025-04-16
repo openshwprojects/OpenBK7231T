@@ -76,9 +76,9 @@ make APP_BIN_NAME=$APP_BIN_NAME USER_SW_VER=$USER_SW_VER APP_VERSION=$APP_VERSIO
 echo "Start Combined"
 cp ${APP_PATH}/$APP_BIN_NAME/output/$APP_VERSION/${APP_BIN_NAME}_${APP_VERSION}.bin tools/generate/
 echo "Combined will do cd"
-cd tools/generate
+cd tools/generate/
 echo "Combined will do OTAFIX"
-./${OTAFIX} ${APP_BIN_NAME}_${APP_VERSION}.bin
+./${OTAFIX} ${APP_BIN_NAME}_${APP_VERSION}.bin &
 echo "Combined will do ENCRYPT"
 ./${ENCRYPT} ${APP_BIN_NAME}_${APP_VERSION}.bin 510fb093 a3cbeadc 5993a17e c7adeb03 10000
 echo "Combined will do mpytools.py"

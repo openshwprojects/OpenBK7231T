@@ -234,28 +234,28 @@ SRC_C += ./beken378/driver/sys_ctrl/sys_ctrl.c
 SRC_C += ./beken378/driver/uart/Retarget.c
 SRC_C += ./beken378/driver/uart/uart_bk.c
 SRC_C += ./beken378/driver/wdt/wdt.c
-SRC_C += ./beken378/driver/ble/ble.c
-SRC_C += ./beken378/driver/ble/ble_pub/ip/ble/hl/src/prf/prf.c
-SRC_C += ./beken378/driver/ble/ble_pub/ip/ble/profiles/sdp/src/sdp_service.c
-SRC_C += ./beken378/driver/ble/ble_pub/ip/ble/profiles/sdp/src/sdp_service_task.c
-SRC_C += ./beken378/driver/ble/ble_pub/ip/ble/profiles/comm/src/comm.c
-SRC_C += ./beken378/driver/ble/ble_pub/ip/ble/profiles/comm/src/comm_task.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/app/src/app_ble.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/app/src/app_task.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/app/src/app_sdp.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/app/src/app_sec.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/app/src/app_comm.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/common/src/common_list.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/common/src/common_utils.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/common/src/RomCallFlash.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/dbg/src/dbg.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/dbg/src/dbg_mwsgen.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/dbg/src/dbg_swdiag.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/dbg/src/dbg_task.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/rwip/src/rwip.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/rf/src/ble_rf_xvr.c
-SRC_C += ./beken378/driver/ble/ble_pub/modules/ecc_p256/src/ecc_p256.c
-SRC_C += ./beken378/driver/ble/ble_pub/plf/refip/src/driver/uart/uart.c           
+#SRC_C += ./beken378/driver/ble/ble.c
+#SRC_C += ./beken378/driver/ble/ble_pub/ip/ble/hl/src/prf/prf.c
+#SRC_C += ./beken378/driver/ble/ble_pub/ip/ble/profiles/sdp/src/sdp_service.c
+#SRC_C += ./beken378/driver/ble/ble_pub/ip/ble/profiles/sdp/src/sdp_service_task.c
+#SRC_C += ./beken378/driver/ble/ble_pub/ip/ble/profiles/comm/src/comm.c
+#SRC_C += ./beken378/driver/ble/ble_pub/ip/ble/profiles/comm/src/comm_task.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/app/src/app_ble.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/app/src/app_task.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/app/src/app_sdp.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/app/src/app_sec.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/app/src/app_comm.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/common/src/common_list.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/common/src/common_utils.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/common/src/RomCallFlash.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/dbg/src/dbg.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/dbg/src/dbg_mwsgen.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/dbg/src/dbg_swdiag.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/dbg/src/dbg_task.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/rwip/src/rwip.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/rf/src/ble_rf_xvr.c
+#SRC_C += ./beken378/driver/ble/ble_pub/modules/ecc_p256/src/ecc_p256.c
+#SRC_C += ./beken378/driver/ble/ble_pub/plf/refip/src/driver/uart/uart.c           
 
 #function layer
 SRC_C += ./beken378/func/func.c
@@ -665,7 +665,7 @@ CPPDEFINES += -DPLATFORM_BK7231T=1
 CPPDEFINES += -DPLATFORM_BEKEN=1
 
 CCFLAGS = $(CPPDEFINES)
-CCFLAGS += -g -mthumb -mcpu=arm968e-s -march=armv5te -mthumb-interwork -mlittle-endian -Os
+CCFLAGS += -g0 -mthumb -mcpu=arm968e-s -march=armv5te -mthumb-interwork -mlittle-endian -Os
 CCFLAGS += -ffunction-sections -fsigned-char -fdata-sections -Wno-unused-function -Wno-unused-but-set-variable
 
 CXXFLAGS = $(CCFLAGS)
@@ -674,14 +674,14 @@ CXXFLAGS += -std=gnu++11 -MMD -fno-exceptions -fno-rtti -Wno-literal-suffix -Wno
 CFLAGS = $(CCFLAGS)
 CFLAGS += -std=c99 -Wunknown-pragmas -nostdlib -Wall
 
-OSFLAGS =
-OSFLAGS += -g -marm -mcpu=arm968e-s -march=armv5te -mthumb-interwork -mlittle-endian -Os -std=c99 -ffunction-sections -Wall -fsigned-char -fdata-sections -Wunknown-pragmas
+OSFLAGS = -flto
+OSFLAGS += -g0 -marm -mcpu=arm968e-s -march=armv5te -mthumb-interwork -mlittle-endian -Os -std=c99 -ffunction-sections -Wall -fsigned-char -fdata-sections -Wunknown-pragmas
 
 ASMFLAGS = 
-ASMFLAGS += -g -marm -mthumb-interwork -mcpu=arm968e-s -march=armv5te -x assembler-with-cpp
+ASMFLAGS += -g0 -marm -mthumb-interwork -mcpu=arm968e-s -march=armv5te -x assembler-with-cpp
 
-LFLAGS = 
-LFLAGS += -g -Wl,--gc-sections -marm -mcpu=arm968e-s -mthumb-interwork 
+LFLAGS = -flto
+LFLAGS += -g0 -Wl,--gc-sections -marm -mcpu=arm968e-s -mthumb-interwork 
 # LFLAGS += -nostdlib
 LFLAGS += -Xlinker -Map=tuya.map  
 LFLAGS += -Wl,-wrap,malloc -Wl,-wrap,_malloc_r -Wl,-wrap,free -Wl,-wrap,_free_r -Wl,-wrap,zalloc -Wl,-wrap,calloc -Wl,-wrap,realloc  -Wl,-wrap,_realloc_r
