@@ -111,7 +111,7 @@
 #define CFG_USE_CAMERA_INTF                        0
 
 /*section 13-----for GENERRAL DMA */
-#define CFG_GENERAL_DMA                            0
+#define CFG_GENERAL_DMA                            1
 
 /*section 14-----for FTPD UPGRADE*/
 #define CFG_USE_FTPD_UPGRADE                       0
@@ -146,7 +146,7 @@
 #define CFG_SYS_REDUCE_NORMAL_POWER                0
 
 /*section 24 ----- less memery in rwnx*/
-#define CFG_LESS_MEMERY_IN_RWNX                    0
+#define CFG_LESS_MEMERY_IN_RWNX                    1
 
 /*section 25 ----- use audio*/
 #define CFG_USE_AUDIO                              0
@@ -160,8 +160,8 @@
 #define CFG_USE_TUYA_CCA_TEST                      0
 
 #define CFG_AP_MONITOR_COEXIST                     1
-#define CFG_SUPPORT_BLE                            1
-#define CFG_USE_BLE_PS                             1
+#define CFG_SUPPORT_BLE                            0
+#define CFG_USE_BLE_PS                             0
 
 #define CFG_ENABLE_ATE_FEATURE                     0
 #define CFG_RWNX_QOS_MSDU						   1
