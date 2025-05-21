@@ -78,6 +78,33 @@ void __assert_func(const char *file, int line, const char *func, const char *fai
 	os_printf("%s %d func %s expr %s\n", file, line, func, failedexpr);
 	ASSERT(0);
 }
+void __attribute__((weak)) rwip_wakeup(void) {}
+void __attribute__((weak)) rwip_wakeup_end(void) {}
+uint8_t __attribute__((weak)) ble_switch_mac_sleeped = 0;
+uint8_t __attribute__((weak)) ble_active = 0;
+void __attribute__((weak)) ble_switch_rf_to_wifi(void) {}
+uint8_t __attribute__((weak)) ble_is_start(void)
+{
+	return 0;
+}
+uint32_t __attribute__((weak)) ble_in_dut_mode(void)
+{
+	return 0;
+}
+uint8 __attribute__((weak)) is_rf_switch_to_ble(void)
+{
+	return 0;
+}
+uint32_t ea_time_get_halfslot_rounded(void);
+uint32_t ea_timer_next_target_get(void);
+uint32_t __attribute__((weak)) rwip_get_current_time(void)
+{
+	return (ea_time_get_halfslot_rounded());
+}
+uint32_t __attribute__((weak)) rwip_get_next_target_time(void)
+{
+	return (ea_timer_next_target_get());
+}
 
 // eof
 
