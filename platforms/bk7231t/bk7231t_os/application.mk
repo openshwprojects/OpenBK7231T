@@ -386,6 +386,7 @@ SRC_C += ./beken378/func/lwip_intf/lwip-2.0.2/src/netif/ethernet.c
 SRC_C += ./beken378/func/lwip_intf/lwip-2.0.2/src/apps/httpd/httpd.c
 SRC_C += ./beken378/func/lwip_intf/lwip-2.0.2/src/apps/httpd/fs.c
 SRC_C += ./beken378/func/lwip_intf/lwip-2.0.2/src/apps/mqtt/mqtt.c
+SRC_C += ./beken378/func/lwip_intf/lwip-2.0.2/src/apps/mdns/mdns.c
 endif
 
 ifeq ($(CFG_LWIP_2_1_3),1)
@@ -442,6 +443,7 @@ SRC_C += ./beken378/func/lwip_intf/lwip-2.1.3/src/netif/ethernet.c
 SRC_C += ./beken378/func/lwip_intf/lwip-2.1.3/src/apps/http/httpd.c
 SRC_C += ./beken378/func/lwip_intf/lwip-2.1.3/src/apps/http/fs.c
 SRC_C += ./beken378/func/lwip_intf/lwip-2.1.3/src/apps/mqtt/mqtt.c
+SRC_C += ./beken378/func/lwip_intf/lwip-2.1.3/src/apps/mdns/mdns.c
 endif
 
 SRC_C += ./beken378/func/lwip_intf/dhcpd/dhcp-server.c
