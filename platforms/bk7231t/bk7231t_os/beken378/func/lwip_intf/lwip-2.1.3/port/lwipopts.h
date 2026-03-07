@@ -300,10 +300,12 @@
 
 #define MDNS_TABLE_SIZE                 1  // number of mDNS table entries
 #define MDNS_MAX_SERVERS                1  // number of mDNS multicast addresses
+#define LWIP_MDNS_RESPONDER             1
+#define LWIP_NUM_NETIF_CLIENT_DATA      (LWIP_MDNS_RESPONDER)
 /* TODO: Number of active UDP PCBs is equal to number of active UDP sockets plus
  * two. Need to find the users of these 2 PCBs
  */
-#define MEMP_NUM_UDP_PCB		(MAX_SOCKETS_UDP + 2)
+#define MEMP_NUM_UDP_PCB		(MAX_SOCKETS_UDP + 3)
 /* NOTE: some times the socket() call for SOCK_DGRAM might fail if you dont
  * have enough MEMP_NUM_UDP_PCB */
 
